@@ -6,7 +6,7 @@ import {
   Mail, ChevronRight, Star,
   Globe, Paintbrush, TrendingUp, Headphones, Search, Database
 } from "lucide-react";
-import { initAnalytics, trackPage, trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
+import { trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
 import CookieBanner from "../components/CookieBanner";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
@@ -287,18 +287,6 @@ export default function LandingPage() {
     }, speed);
     return () => clearInterval(timer);
   }, [tagline]);
-
-  // Analytics: init after consent
-  useEffect(() => {
-    const fire = () => {
-      if (localStorage.getItem("cookie_consent") !== "accepted") return;
-      initAnalytics(import.meta.env.VITE_POSTHOG_KEY as string);
-      trackPage();
-    };
-    fire();
-    window.addEventListener("consent-given", fire);
-    return () => window.removeEventListener("consent-given", fire);
-  }, []);
 
   // Analytics: section viewed tracking via IntersectionObserver
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import posthog from "posthog-js";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -13,12 +14,13 @@ export default function CookieBanner() {
 
   const accept = () => {
     localStorage.setItem("cookie_consent", "accepted");
-    window.dispatchEvent(new Event("consent-given"));
+    posthog.opt_in_capturing();
     setVisible(false);
   };
 
   const decline = () => {
     localStorage.setItem("cookie_consent", "declined");
+    posthog.opt_out_capturing();
     setVisible(false);
   };
 
