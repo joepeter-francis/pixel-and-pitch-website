@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { api, getStoredUser, clearAuth } from "../../lib/api";
-import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2 } from "lucide-react";
+import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2, Store, Search } from "lucide-react";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
 
@@ -42,6 +42,16 @@ interface LeadStatus {
   order_index: number;
 }
 
+interface AdminTenant {
+  id: string;
+  company_name: string;
+  slug: string;
+  is_published: boolean;
+  is_disabled: boolean;
+  created_at: string;
+  owner_email: string | null;
+}
+
 const STATUS_DISPLAY: Record<string, string> = {
   new: "New",
   pursuing: "Pursuing",
@@ -63,9 +73,12 @@ const INTEREST_DISPLAY: Record<string, string> = {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"analytics" | "leads" | "statuses">("analytics");
+  const [tab, setTab] = useState<"analytics" | "leads" | "statuses" | "stores">("analytics");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [statuses, setStatuses] = useState<LeadStatus[]>([]);
+  const [stores, setStores] = useState<AdminTenant[]>([]);
+  const [storesLoading, setStoresLoading] = useState(false);
+  const [storeSearch, setStoreSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
@@ -177,6 +190,34 @@ export default function AdminDashboard() {
 
   const handleLogout = () => { clearAuth(); navigate("/admin"); };
 
+  const loadStores = useCallback(async () => {
+    setStoresLoading(true);
+    try {
+      const data = await api.get<AdminTenant[]>("/admin/tenants");
+      setStores(data);
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
+      toast.error("Failed to load stores");
+    } finally {
+      setStoresLoading(false);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (tab === "stores") loadStores();
+  }, [tab, loadStores]);
+
+  const toggleDisabled = async (id: string, currentValue: boolean) => {
+    try {
+      const updated = await api.patch<AdminTenant>(`/admin/tenants/${id}/disable`, { is_disabled: !currentValue });
+      setStores(prev => prev.map(s => s.id === id ? { ...s, is_disabled: updated.is_disabled } : s));
+      toast.success(updated.is_disabled ? "Store disabled" : "Store re-enabled");
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
+      toast.error("Failed to update store");
+    }
+  };
+
   const filteredLeads = filterStatus === "all" ? leads : leads.filter(l => l.status === filterStatus);
 
   const allStatusLabels = [
@@ -241,11 +282,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 rounded-xl bg-gray-900 p-1 mb-6 w-fit">
-          {(["analytics", "leads", "statuses"] as const).map(t => (
+        <div className="flex gap-1 rounded-xl bg-gray-900 p-1 mb-6 w-fit flex-wrap">
+          {(["analytics", "leads", "statuses", "stores"] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-5 py-2 rounded-lg text-sm font-bold capitalize transition-all ${tab === t ? "bg-gray-800 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"}`}>
-              {t === "analytics" ? "Analytics" : t === "leads" ? "Leads" : "Status Config"}
+              {t === "analytics" ? "Analytics" : t === "leads" ? "Leads" : t === "statuses" ? "Status Config" : "Stores"}
             </button>
           ))}
         </div>
@@ -501,6 +542,108 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Stores Tab */}
+        {tab === "stores" && (
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <input
+                  type="text"
+                  value={storeSearch}
+                  onChange={e => setStoreSearch(e.target.value)}
+                  placeholder="Search stores..."
+                  className="w-full rounded-xl border border-gray-700 bg-gray-800 pl-9 pr-4 py-2 text-sm text-gray-100 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <button onClick={loadStores} className="p-2 rounded-lg text-gray-400 hover:bg-gray-800 transition-colors">
+                <RefreshCw className="h-4 w-4" />
+              </button>
+            </div>
+
+            {storesLoading ? (
+              <div className="text-center py-20 text-gray-500 text-sm animate-pulse">Loading stores...</div>
+            ) : (
+              <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-800">
+                      <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Store</th>
+                      <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hidden sm:table-cell">Owner</th>
+                      <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Status</th>
+                      <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hidden md:table-cell">Created</th>
+                      <th className="text-right px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stores
+                      .filter(s => !storeSearch || s.company_name.toLowerCase().includes(storeSearch.toLowerCase()) || s.slug.toLowerCase().includes(storeSearch.toLowerCase()))
+                      .map(store => (
+                        <tr key={store.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-800/40 transition-colors">
+                          <td className="px-5 py-4">
+                            <p className="font-semibold text-white text-sm">{store.company_name}</p>
+                            <p className="text-xs text-gray-500">/{store.slug}</p>
+                          </td>
+                          <td className="px-5 py-4 hidden sm:table-cell">
+                            <p className="text-xs text-gray-400 truncate max-w-[160px]">{store.owner_email || "—"}</p>
+                          </td>
+                          <td className="px-5 py-4">
+                            <div className="flex flex-col gap-1">
+                              <span className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-bold ${store.is_published ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
+                                {store.is_published ? "Live" : "Draft"}
+                              </span>
+                              {store.is_disabled && (
+                                <span className="w-fit rounded-full px-2 py-0.5 text-[10px] font-bold bg-red-500/20 text-red-400">
+                                  Disabled
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 hidden md:table-cell">
+                            <p className="text-xs text-gray-500">
+                              {new Date(store.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                            </p>
+                          </td>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center justify-end gap-2">
+                              <a
+                                href={`https://marketplace.pixelndpitch.com/${store.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-gray-700 transition-all"
+                                title="View store"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </a>
+                              <button
+                                onClick={() => toggleDisabled(store.id, store.is_disabled)}
+                                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                                  store.is_disabled
+                                    ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40"
+                                    : "bg-red-600/20 text-red-400 hover:bg-red-600/40"
+                                }`}
+                              >
+                                {store.is_disabled ? "Re-enable" : "Disable"}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    {stores.filter(s => !storeSearch || s.company_name.toLowerCase().includes(storeSearch.toLowerCase()) || s.slug.toLowerCase().includes(storeSearch.toLowerCase())).length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-5 py-16 text-center">
+                          <Store className="mx-auto mb-3 h-8 w-8 text-gray-600" />
+                          <p className="text-gray-500 text-sm">{storeSearch ? "No matching stores" : "No stores yet"}</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
