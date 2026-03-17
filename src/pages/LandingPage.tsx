@@ -53,18 +53,173 @@ const PROCESS_STEPS = [
   { n: "06", title: "Handoff", desc: "Documentation, training & optional ongoing maintenance" },
 ];
 
-const GREETINGS: Record<string, string | string[]> = {
-  IN: ["नमस्ते", "ਸਤ ਸ੍ਰੀ ਅਕਾਲ", "నమస్కారం", "வணக்கம்", "নমস্কার", "નમસ્તે"],
-  FR: "Bonjour", DE: "Hallo", ES: "Hola", IT: "Ciao",
-  JP: "こんにちは", CN: "你好", KR: "안녕하세요",
-  BR: "Olá", PT: "Olá", RU: "Привет",
-  AE: "مرحباً", SA: "مرحباً", PK: "آداب",
-  BD: "নমস্কার", LK: "ආයුබෝවන්",
+type TimeSlot = "midnight" | "earlyMorning" | "morning" | "afternoon" | "evening" | "night";
+type WeatherKey = "sunny" | "rainy" | "cloudy" | "foggy" | "snowy" | "stormy";
+
+const TAGLINES: Record<TimeSlot, string[]> & { weather: Record<WeatherKey, string[]> } = {
+  midnight: [
+    "Midnight and still building? Legends work these hours.",
+    "The world's asleep. You're three features ahead.",
+    "3am ideas are the ones that change industries.",
+    "Most dream it. You're coding it at midnight.",
+    "The grind doesn't sleep. Neither do you.",
+    "While others Netflix, you build empires.",
+    "Your competition is asleep. You're not.",
+    "Late night, big vision. You're exactly where you need to be.",
+    "Startup hours: whenever inspiration strikes.",
+    "The best founders work when nobody's watching.",
+    "Dark outside. Bright future.",
+    "No alarm needed when you love what you build.",
+    "Midnight oil burns the brightest.",
+    "Some call it insomnia. We call it ambition.",
+    "The night shift is where businesses are born.",
+  ],
+  earlyMorning: [
+    "Up before the sun? You're already ahead of most.",
+    "5am and already here — that's founder energy.",
+    "The city's still asleep, but you're already building.",
+    "Early mornings are the entrepreneur's unfair advantage.",
+    "Coffee in hand. Dreams on the line. Let's build.",
+    "You woke up early. Your competition didn't.",
+    "The alarm hasn't gone off for most. You didn't need one.",
+    "Sunrise is your starting gun.",
+    "While the world hits snooze, you're hitting launch.",
+    "Dawn belongs to builders.",
+    "Most people sleep through their breakthrough moment.",
+    "It's early. You're early. That's the whole point.",
+    "The morning belongs to those who claimed it.",
+    "First light. First move. You're already winning.",
+    "Early bird? No — early founder.",
+  ],
+  morning: [
+    "Good morning, founder. Today's the day you launch.",
+    "The hustle starts before the coffee kicks in.",
+    "Morning energy hits different when you're building something real.",
+    "The best time to start was yesterday. Second best? Right now.",
+    "Today's to-do list: build something people love.",
+    "A new day, a new chance to ship something great.",
+    "Your store won't build itself. But we're pretty close.",
+    "Rise and build.",
+    "The market opens. So does your opportunity.",
+    "Fresh morning, fresh start, fresh store.",
+    "This morning, someone will discover your brand. Make sure it's live.",
+    "Your brand has a story. Let's give it a home.",
+    "Good things are built in the morning. Great ones too.",
+    "Morning: when side projects become the main event.",
+    "The world opens for business. So should you.",
+  ],
+  afternoon: [
+    "Afternoon slump? Not for builders.",
+    "Lunch break idea? Some of the best startups started here.",
+    "The grind doesn't take a siesta.",
+    "Halfway through the day. Halfway to launch?",
+    "While others nap, you ship.",
+    "Productivity peak hour. Use it.",
+    "2pm fire. Build something worth staying for.",
+    "Post-lunch momentum — the secret weapon of founders.",
+    "Your competition is in a meeting. You're building.",
+    "The afternoon is underrated. So is your idea — until it isn't.",
+    "Still going strong. That's the founder mindset.",
+    "Great ideas don't wait for the right time.",
+    "Every afternoon is a chance to inch closer to launch.",
+    "The clock's ticking. In a good way.",
+    "Afternoon hustle. No one talks about it. Everyone needs it.",
+  ],
+  evening: [
+    "The 9-to-5 is clocking out. You're just getting started.",
+    "Side hustle hours. The best hours.",
+    "After the day job comes the real work.",
+    "Sunset doesn't mean stop — it means pivot.",
+    "Golden hour for golden ideas.",
+    "Office closed. Startup open.",
+    "When the day job ends, the dream job begins.",
+    "Evening: when side projects become the main character.",
+    "You finished your day. Now start your destiny.",
+    "The best businesses were built in evenings like this.",
+    "Dinner can wait. Your brand can't.",
+    "Prime time isn't on TV — it's in your browser right now.",
+    "Evening builders are tomorrow's disruptors.",
+    "Clocking out? Or clocking in — to your own thing?",
+    "The best shift starts now.",
+  ],
+  night: [
+    "True entrepreneurs are always night owls.",
+    "Prime thinking hours for the ambitious mind.",
+    "The best ideas come after dark.",
+    "Night mode activated. Build mode: on.",
+    "Burning the midnight oil never went out of style.",
+    "The world slows down. You speed up.",
+    "Stars are out. Ideas are flowing.",
+    "Night is just daytime for founders.",
+    "Your best work happens when the world goes quiet.",
+    "Silence + ambition = something great.",
+    "It's late. Your competition stopped hours ago.",
+    "Night shift at your own company. All vision, no overtime.",
+    "The internet never sleeps. Neither does opportunity.",
+    "Some call it late. Founders call it prime time.",
+    "After hours is where before-hours winners are made.",
+  ],
+  weather: {
+    sunny: [
+      "Bright day, brighter future. Let's build.",
+      "The sun's out. Your ambition should be too.",
+      "Clear skies, clear vision. Today's the day.",
+      "Sunshine and startup energy — unstoppable combo.",
+      "Good weather is wasted on people who aren't building something.",
+    ],
+    rainy: [
+      "Even the rain can't stop a true builder.",
+      "Perfect weather to stay in and launch something.",
+      "Rain outside, fire inside. Let's go.",
+      "Rainy days are made for big ideas.",
+      "The best stores were built on rainy days just like this.",
+    ],
+    cloudy: [
+      "Grey skies, bright future.",
+      "Clouds can't dim your vision.",
+      "Overcast outside. Crystal clear inside.",
+    ],
+    stormy: [
+      "Storms don't stop builders. They inspire them.",
+      "Thunder and lightning: nature's way of saying launch bold.",
+      "The best ideas survive every storm.",
+    ],
+    snowy: [
+      "Snow day? Perfect time to build your empire.",
+      "Cold outside, warm ambition inside.",
+    ],
+    foggy: [
+      "Foggy morning, focused founder.",
+      "Can't see far? Build anyway. The path clears when you move.",
+    ],
+  },
 };
 
-function getGreeting(code: string): string {
-  const g = GREETINGS[code] || "Hello";
-  return Array.isArray(g) ? g[Math.floor(Math.random() * g.length)] : g;
+function getTimeSlot(): TimeSlot {
+  const h = new Date().getHours();
+  if (h >= 23 || h < 4) return "midnight";
+  if (h < 8)  return "earlyMorning";
+  if (h < 12) return "morning";
+  if (h < 17) return "afternoon";
+  if (h < 20) return "evening";
+  return "night";
+}
+
+function getWeatherKey(wmoCode: number): WeatherKey | null {
+  if (wmoCode === 0) return "sunny";
+  if (wmoCode <= 3)  return "cloudy";
+  if (wmoCode <= 48) return "foggy";
+  if (wmoCode <= 67) return "rainy";
+  if (wmoCode <= 77) return "snowy";
+  if (wmoCode <= 82) return "rainy";
+  if (wmoCode >= 95) return "stormy";
+  return null;
+}
+
+function pickTagline(slot: TimeSlot, weather: WeatherKey | null): string {
+  const base = TAGLINES[slot];
+  const pool = weather ? [...base, ...TAGLINES.weather[weather]] : base;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export default function LandingPage() {
@@ -72,8 +227,8 @@ export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", product_interest: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [countryCode, setCountryCode] = useState("");
-  const [displayedGreeting, setDisplayedGreeting] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [displayedTagline, setDisplayedTagline] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -85,29 +240,45 @@ export default function LandingPage() {
   useEffect(() => {
     fetch("https://ipapi.co/json/")
       .then(r => r.json())
-      .then(d => setCountryCode(d.country_code || "__"))
-      .catch(() => setCountryCode("__"));
+      .then(async (d) => {
+        const { latitude, longitude } = d;
+        let weather: WeatherKey | null = null;
+        if (latitude && longitude) {
+          try {
+            const w = await fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code`
+            ).then(r => r.json());
+            weather = getWeatherKey(w?.current?.weather_code ?? -1);
+          } catch {
+            // weather is optional — silently ignore
+          }
+        }
+        setTagline(pickTagline(getTimeSlot(), weather));
+      })
+      .catch(() => {
+        setTagline(pickTagline(getTimeSlot(), null));
+      });
   }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setCountryCode(prev => prev || "__");
+      setTagline(prev => prev || pickTagline(getTimeSlot(), null));
     }, 2500);
     return () => clearTimeout(timeout);
   }, []);
 
   useEffect(() => {
-    if (!countryCode) return;
-    const word = getGreeting(countryCode);
+    if (!tagline) return;
+    setDisplayedTagline("");
     let i = 0;
-    setDisplayedGreeting("");
+    const speed = Math.max(30, 55 - Math.floor(tagline.length / 4));
     const timer = setInterval(() => {
       i++;
-      setDisplayedGreeting(word.slice(0, i));
-      if (i >= word.length) clearInterval(timer);
-    }, 60);
+      setDisplayedTagline(tagline.slice(0, i));
+      if (i >= tagline.length) clearInterval(timer);
+    }, speed);
     return () => clearInterval(timer);
-  }, [countryCode]);
+  }, [tagline]);
 
   const toggleTheme = () => {
     const next = !dark;
@@ -201,18 +372,17 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="mb-6">
-            <p className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tight leading-none mb-3">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="mb-8">
+            <p className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-5 min-h-[3.5rem]">
               <span className="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
-                {displayedGreeting || "\u00A0"}
+                {displayedTagline || "\u00A0"}
               </span>
-              {displayedGreeting.length < getGreeting(countryCode || "__").length && (
+              {displayedTagline.length < tagline.length && (
                 <span className="animate-pulse text-purple-400">|</span>
               )}
             </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-              Your brand deserves<br />
-              <span className="text-gray-400 font-medium">a home on the internet.</span>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white/80 tracking-tight">
+              Your store, live in minutes.
             </h1>
           </motion.div>
 
@@ -220,10 +390,10 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-base sm:text-lg text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed"
           >
-            Launch your brand online — fast, beautiful, and built to convert.
-            Whether you need a store in minutes or a custom-built platform, we've got you covered.
+            Launch your product catalog, accept payments, and start selling —
+            no code, no hassle.
           </motion.p>
 
           <motion.div
