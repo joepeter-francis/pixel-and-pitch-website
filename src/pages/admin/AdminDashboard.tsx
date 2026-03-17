@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { api, getStoredUser, clearAuth } from "../../lib/api";
-import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2, Store, Search } from "lucide-react";
+import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2, Store, Search, Star, Megaphone } from "lucide-react";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
 
@@ -48,6 +48,8 @@ interface AdminTenant {
   slug: string;
   is_published: boolean;
   is_disabled: boolean;
+  is_featured: boolean;
+  is_recommended: boolean;
   created_at: string;
   owner_email: string | null;
 }
@@ -212,6 +214,28 @@ export default function AdminDashboard() {
       const updated = await api.patch<AdminTenant>(`/admin/tenants/${id}/disable`, { is_disabled: !currentValue });
       setStores(prev => prev.map(s => s.id === id ? { ...s, is_disabled: updated.is_disabled } : s));
       toast.success(updated.is_disabled ? "Store disabled" : "Store re-enabled");
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
+      toast.error("Failed to update store");
+    }
+  };
+
+  const toggleFeatured = async (id: string, currentValue: boolean) => {
+    try {
+      const updated = await api.patch<AdminTenant>(`/admin/tenants/${id}/feature`, { is_featured: !currentValue });
+      setStores(prev => prev.map(s => s.id === id ? { ...s, is_featured: updated.is_featured } : s));
+      toast.success(updated.is_featured ? "Store marked as Featured (Ad)" : "Store removed from Featured");
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
+      toast.error("Failed to update store");
+    }
+  };
+
+  const toggleRecommended = async (id: string, currentValue: boolean) => {
+    try {
+      const updated = await api.patch<AdminTenant>(`/admin/tenants/${id}/feature`, { is_recommended: !currentValue });
+      setStores(prev => prev.map(s => s.id === id ? { ...s, is_recommended: updated.is_recommended } : s));
+      toast.success(updated.is_recommended ? "Store added to P&P Picks" : "Store removed from P&P Picks");
     } catch (err: unknown) {
       if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
       toast.error("Failed to update store");
@@ -576,6 +600,7 @@ export default function AdminDashboard() {
                       <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Store</th>
                       <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hidden sm:table-cell">Owner</th>
                       <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Status</th>
+                      <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hidden lg:table-cell">Spotlight</th>
                       <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hidden md:table-cell">Created</th>
                       <th className="text-right px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Actions</th>
                     </tr>
@@ -602,6 +627,34 @@ export default function AdminDashboard() {
                                   Disabled
                                 </span>
                               )}
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 hidden lg:table-cell">
+                            <div className="flex flex-col gap-1">
+                              <button
+                                onClick={() => toggleFeatured(store.id, store.is_featured)}
+                                title={store.is_featured ? "Remove from Featured (Ad)" : "Mark as Featured (Ad)"}
+                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all w-fit ${
+                                  store.is_featured
+                                    ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/40"
+                                    : "bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-gray-300"
+                                }`}
+                              >
+                                <Megaphone className="h-3 w-3" />
+                                {store.is_featured ? "Ad" : "Ad?"}
+                              </button>
+                              <button
+                                onClick={() => toggleRecommended(store.id, store.is_recommended)}
+                                title={store.is_recommended ? "Remove from P&P Picks" : "Add to P&P Picks"}
+                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all w-fit ${
+                                  store.is_recommended
+                                    ? "bg-violet-500/20 text-violet-400 hover:bg-violet-500/40"
+                                    : "bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-gray-300"
+                                }`}
+                              >
+                                <Star className="h-3 w-3" />
+                                {store.is_recommended ? "Pick" : "Pick?"}
+                              </button>
                             </div>
                           </td>
                           <td className="px-5 py-4 hidden md:table-cell">
@@ -636,7 +689,7 @@ export default function AdminDashboard() {
                       ))}
                     {stores.filter(s => !storeSearch || s.company_name.toLowerCase().includes(storeSearch.toLowerCase()) || s.slug.toLowerCase().includes(storeSearch.toLowerCase())).length === 0 && (
                       <tr>
-                        <td colSpan={5} className="px-5 py-16 text-center">
+                        <td colSpan={6} className="px-5 py-16 text-center">
                           <Store className="mx-auto mb-3 h-8 w-8 text-gray-600" />
                           <p className="text-gray-500 text-sm">{storeSearch ? "No matching stores" : "No stores yet"}</p>
                         </td>
