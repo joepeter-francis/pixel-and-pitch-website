@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { api, getStoredUser, clearAuth } from "../../lib/api";
-import { LogOut, Plus, Trash2, RefreshCw, ExternalLink } from "lucide-react";
+import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2 } from "lucide-react";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
 
@@ -119,7 +119,8 @@ export default function AdminDashboard() {
       } else {
         setAnalytics(data as AnalyticsSummary);
       }
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
       setAnalyticsError("Failed to load analytics");
     } finally {
       setAnalyticsLoading(false);
@@ -134,7 +135,10 @@ export default function AdminDashboard() {
     try {
       const updated = await api.patch<Lead>(`/admin/leads/${id}`, update);
       setLeads(prev => prev.map(l => l.id === id ? updated : l));
-    } catch { toast.error("Failed to update lead"); }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
+      toast.error("Failed to update lead");
+    }
   };
 
   const handleNotesBlur = (lead: Lead) => {
@@ -155,6 +159,7 @@ export default function AdminDashboard() {
       setNewColor("#8b5cf6");
       toast.success("Status added");
     } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
       toast.error(err instanceof Error ? err.message : "Failed to add status");
     } finally { setAddingStatus(false); }
   };
@@ -164,7 +169,10 @@ export default function AdminDashboard() {
     try {
       await api.delete(`/admin/statuses/${id}`);
       setStatuses(prev => prev.filter(s => s.id !== id));
-    } catch { toast.error("Failed to delete status"); }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
+      toast.error("Failed to delete status");
+    }
   };
 
   const handleLogout = () => { clearAuth(); navigate("/admin"); };
@@ -437,17 +445,17 @@ export default function AdminDashboard() {
                           <div className="flex items-center gap-2 flex-wrap mb-3">
                             {lead.country && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-gray-800 px-2.5 py-0.5 text-[10px] font-semibold text-gray-300">
-                                🌍 {lead.country}
+                                <Globe className="h-3 w-3" /> {lead.country}
                               </span>
                             )}
                             {lead.device && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-gray-800 px-2.5 py-0.5 text-[10px] font-semibold text-gray-300">
-                                {lead.device === "mobile" ? "📱" : "💻"} {lead.device}
+                                {lead.device === "mobile" ? <Smartphone className="h-3 w-3" /> : <Monitor className="h-3 w-3" />} {lead.device}
                               </span>
                             )}
                             {lead.referrer && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-gray-800 px-2.5 py-0.5 text-[10px] font-semibold text-gray-300">
-                                🔗 {lead.referrer.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
+                                <Link2 className="h-3 w-3" /> {lead.referrer.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
                               </span>
                             )}
                             {lead.posthog_person_url && (

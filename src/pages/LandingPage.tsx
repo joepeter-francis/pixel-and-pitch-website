@@ -4,7 +4,9 @@ import { toast } from "sonner";
 import {
   ShoppingBag, Zap, Check, ArrowRight, Menu, X, Sun, Moon,
   Mail, ChevronRight, Star,
-  Globe, Paintbrush, TrendingUp, Headphones, Search, Database
+  Globe, Paintbrush, TrendingUp, Headphones, Search, Database,
+  FileText, Megaphone, Settings2, Building2, MapPin, Users, Code2,
+  type LucideIcon
 } from "lucide-react";
 import { trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
 import CookieBanner from "../components/CookieBanner";
@@ -28,12 +30,12 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-const EXCLUSIVE_TIERS = [
-  { tier: 1, name: "Static Site", emoji: "🗂️", best: "Landing pages, portfolios, docs", features: ["Up to 5 pages", "Responsive design", "Cloudflare CDN", "Custom domain + SSL"] },
-  { tier: 2, name: "Marketing Site", emoji: "🚀", best: "Startups, SaaS, product launches", features: ["Up to 10 pages", "Animations & CMS", "Contact forms", "SEO fundamentals"] },
-  { tier: 3, name: "Web Application", emoji: "⚙️", best: "SaaS dashboards, portals", features: ["Auth (JWT/OAuth)", "REST/GraphQL API", "AWS database", "Admin panel + RBAC"] },
-  { tier: 4, name: "E-Commerce Platform", emoji: "🛒", best: "D2C brands, online stores", features: ["Product catalog + variants", "Cart, wishlist", "Razorpay / Stripe / ShipRocket", "Order & inventory management"] },
-  { tier: 5, name: "Enterprise Platform", emoji: "🏗️", best: "Large-scale, multi-tenant", features: ["Custom architecture", "Microservices / monorepo", "Full AWS stack", "SLA & dedicated support"] },
+const EXCLUSIVE_TIERS: { tier: number; name: string; Icon: LucideIcon; best: string; features: string[] }[] = [
+  { tier: 1, name: "Static Site", Icon: FileText, best: "Landing pages, portfolios, docs", features: ["Up to 5 pages", "Responsive design", "Cloudflare CDN", "Custom domain + SSL"] },
+  { tier: 2, name: "Marketing Site", Icon: Megaphone, best: "Startups, SaaS, product launches", features: ["Up to 10 pages", "Animations & CMS", "Contact forms", "SEO fundamentals"] },
+  { tier: 3, name: "Web Application", Icon: Settings2, best: "SaaS dashboards, portals", features: ["Auth (JWT/OAuth)", "REST/GraphQL API", "AWS database", "Admin panel + RBAC"] },
+  { tier: 4, name: "E-Commerce Platform", Icon: ShoppingBag, best: "D2C brands, online stores", features: ["Product catalog + variants", "Cart, wishlist", "Razorpay / Stripe / ShipRocket", "Order & inventory management"] },
+  { tier: 5, name: "Enterprise Platform", Icon: Building2, best: "Large-scale, multi-tenant", features: ["Custom architecture", "Microservices / monorepo", "Full AWS stack", "SLA & dedicated support"] },
 ];
 
 const ADDONS = [
@@ -489,7 +491,7 @@ export default function LandingPage() {
             <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer"
               onClick={() => trackEvent("hero_cta_clicked", { button: "launch_store" })}
               className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-600 px-8 py-4 font-bold text-white text-base shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] transition-all">
-              🚀 Launch Your Store <ArrowRight className="h-4 w-4" />
+              <Zap className="h-4 w-4" /> Launch Your Store <ArrowRight className="h-4 w-4" />
             </a>
             <a href="#contact"
               onClick={() => trackEvent("hero_cta_clicked", { button: "talk_to_us" })}
@@ -642,7 +644,7 @@ export default function LandingPage() {
             {EXCLUSIVE_TIERS.map((t, i) => (
               <FadeIn key={t.tier} delay={i * 0.08}>
                 <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-5 flex flex-col">
-                  <div className="text-3xl mb-3">{t.emoji}</div>
+                  <div className="mb-3"><t.Icon className="h-7 w-7 text-purple-500" /></div>
                   <div className="inline-block rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-[10px] font-black text-gray-500 dark:text-gray-400 mb-2 w-fit">TIER {t.tier}</div>
                   <h4 className="font-black text-gray-900 dark:text-white text-base mb-1">{t.name}</h4>
                   <p className="text-xs text-gray-400 mb-4 leading-relaxed">{t.best}</p>
@@ -706,14 +708,14 @@ export default function LandingPage() {
           </FadeIn>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: "⚡", title: "Fast Delivery", desc: "Launch in days, not months. We move fast without cutting corners." },
-              { icon: "🇮🇳", title: "India-First", desc: "Razorpay, UPI, ShipRocket — built for how Indian businesses operate." },
-              { icon: "🎨", title: "Modern Stack", desc: "React, Next.js, AWS, Vercel, Cloudflare — the tools top products use." },
-              { icon: "🤝", title: "End-to-End", desc: "From idea to launch to support. One team, full accountability." },
+              { Icon: Zap, title: "Fast Delivery", desc: "Launch in days, not months. We move fast without cutting corners." },
+              { Icon: MapPin, title: "India-First", desc: "Razorpay, UPI, ShipRocket — built for how Indian businesses operate." },
+              { Icon: Code2, title: "Modern Stack", desc: "React, Next.js, AWS, Vercel, Cloudflare — the tools top products use." },
+              { Icon: Users, title: "End-to-End", desc: "From idea to launch to support. One team, full accountability." },
             ].map((item, i) => (
               <FadeIn key={item.title} delay={i * 0.1}>
                 <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7 text-center">
-                  <div className="text-4xl mb-4">{item.icon}</div>
+                  <div className="flex justify-center mb-4"><item.Icon className="h-8 w-8 text-purple-500" /></div>
                   <h4 className="font-black text-gray-900 dark:text-white text-lg mb-2">{item.title}</h4>
                   <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                 </div>
