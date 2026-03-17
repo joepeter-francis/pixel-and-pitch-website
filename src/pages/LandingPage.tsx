@@ -6,6 +6,8 @@ import {
   Mail, ChevronRight, Star,
   Globe, Paintbrush, TrendingUp, Headphones, Search, Database
 } from "lucide-react";
+import { initAnalytics, trackPage, trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
+import CookieBanner from "../components/CookieBanner";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
 const API_URL = import.meta.env.VITE_API_URL || "https://api-marketplace.pixelndpitch.com";
@@ -229,6 +231,11 @@ export default function LandingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [tagline, setTagline] = useState("");
   const [displayedTagline, setDisplayedTagline] = useState("");
+  const [formTouched, setFormTouched] = useState(false);
+
+  const productsRef = useRef<HTMLElement>(null);
+  const exclusiveRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -241,7 +248,8 @@ export default function LandingPage() {
     fetch("https://ipapi.co/json/")
       .then(r => r.json())
       .then(async (d) => {
-        const { latitude, longitude } = d;
+        const { latitude, longitude, country_name } = d;
+        if (country_name) sessionStorage.setItem("pnp_country", country_name);
         let weather: WeatherKey | null = null;
         if (latitude && longitude) {
           try {
@@ -280,6 +288,41 @@ export default function LandingPage() {
     return () => clearInterval(timer);
   }, [tagline]);
 
+  // Analytics: init after consent
+  useEffect(() => {
+    const fire = () => {
+      if (localStorage.getItem("cookie_consent") !== "accepted") return;
+      initAnalytics(import.meta.env.VITE_POSTHOG_KEY as string);
+      trackPage();
+    };
+    fire();
+    window.addEventListener("consent-given", fire);
+    return () => window.removeEventListener("consent-given", fire);
+  }, []);
+
+  // Analytics: section viewed tracking via IntersectionObserver
+  useEffect(() => {
+    const observed = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const section = (entry.target as HTMLElement).dataset.section;
+            if (section && !observed.has(section)) {
+              observed.add(section);
+              trackEvent(`${section}_section_viewed`);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    [productsRef, exclusiveRef, contactRef].forEach(ref => {
+      if (ref.current) observer.observe(ref.current);
+    });
+    return () => observer.disconnect();
+  }, []);
+
   const toggleTheme = () => {
     const next = !dark;
     setDark(next);
@@ -292,14 +335,33 @@ export default function LandingPage() {
     if (!formData.name || !formData.email) { toast.error("Name and email are required"); return; }
     setSubmitting(true);
     try {
+      const consent = localStorage.getItem("cookie_consent") === "accepted";
+      identifyUser(formData.email);
+      trackEvent("contact_form_submitted", { product_interest: formData.product_interest });
+
+      const projectId = import.meta.env.VITE_POSTHOG_PROJECT_ID as string;
+      const enriched = {
+        ...formData,
+        ...(consent && {
+          session_id: getDistinctId(),
+          referrer: document.referrer || null,
+          country: sessionStorage.getItem("pnp_country") || null,
+          device: /Mobi/i.test(navigator.userAgent) ? "mobile" : "desktop",
+          posthog_person_url: projectId
+            ? `https://eu.posthog.com/project/${projectId}/persons/${encodeURIComponent(formData.email)}`
+            : null,
+        }),
+      };
+
       const res = await fetch(`${API_URL}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(enriched),
       });
       if (!res.ok) throw new Error("Failed");
       toast.success("Message sent! We'll get back to you within 24 hours.");
       setFormData({ name: "", email: "", phone: "", product_interest: "", message: "" });
+      setFormTouched(false);
     } catch {
       toast.error("Something went wrong. Please email us at admin@pixelndpitch.com");
     } finally {
@@ -403,10 +465,12 @@ export default function LandingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer"
+              onClick={() => trackEvent("hero_cta_clicked", { button: "launch_store" })}
               className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-600 px-8 py-4 font-bold text-white text-base shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] transition-all">
               🚀 Launch Your Store <ArrowRight className="h-4 w-4" />
             </a>
             <a href="#contact"
+              onClick={() => trackEvent("hero_cta_clicked", { button: "talk_to_us" })}
               className="inline-flex items-center gap-2 rounded-2xl border border-gray-700 bg-gray-900/50 px-8 py-4 font-bold text-gray-200 text-base hover:border-purple-500/50 hover:bg-gray-800/50 transition-all">
               Talk to Us <ChevronRight className="h-4 w-4" />
             </a>
@@ -415,7 +479,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRODUCTS ── */}
-      <section id="products" className="py-24 bg-gray-50 dark:bg-gray-900/50">
+      <section id="products" ref={productsRef} data-section="products" className="py-24 bg-gray-50 dark:bg-gray-900/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <FadeIn className="text-center mb-16">
             <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Our Products</p>
@@ -541,7 +605,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── EXCLUSIVE DEEP-DIVE ── */}
-      <section id="exclusive" className="py-24 bg-white dark:bg-gray-950">
+      <section id="exclusive" ref={exclusiveRef} data-section="exclusive" className="py-24 bg-white dark:bg-gray-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <FadeIn className="text-center mb-16">
             <p className="text-sm font-bold uppercase tracking-widest text-emerald-500 mb-3">Exclusive</p>
@@ -638,7 +702,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── CONTACT ── */}
-      <section id="contact" className="py-24 bg-white dark:bg-gray-950">
+      <section id="contact" ref={contactRef} data-section="contact" className="py-24 bg-white dark:bg-gray-950">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <FadeIn className="text-center mb-12">
             <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Get in Touch</p>
@@ -657,6 +721,7 @@ export default function LandingPage() {
                     <input
                       type="text" required value={formData.name}
                       onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
+                      onFocus={() => { if (!formTouched) { trackEvent("contact_form_started"); setFormTouched(true); } }}
                       placeholder="Your name"
                       className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                     />
@@ -725,6 +790,8 @@ export default function LandingPage() {
           </FadeIn>
         </div>
       </section>
+
+      <CookieBanner />
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 py-12">
