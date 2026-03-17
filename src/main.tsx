@@ -19,7 +19,7 @@ posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY as string, {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST as string,
   opt_out_capturing_by_default: localStorage.getItem("cookie_consent") !== "accepted",
   persistence: "localStorage+cookie",
-  capture_pageview: false, // we fire $pageview manually so we control timing
+  capture_pageview: true,  // auto-capture pageview on init (sent immediately, not batched)
 });
 
 createRoot(document.getElementById("root")!).render(
