@@ -28,7 +28,8 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error((err as Record<string, string>).error || `HTTP ${res.status}`);
+    const message = (err as Record<string, string>).error || res.statusText || "";
+    throw new Error(`HTTP ${res.status}${message ? `: ${message}` : ""}`);
   }
   return res.json() as Promise<T>;
 }
