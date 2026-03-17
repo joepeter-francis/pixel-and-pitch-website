@@ -288,6 +288,13 @@ export default function LandingPage() {
     return () => clearInterval(timer);
   }, [tagline]);
 
+  // Analytics: fire pageview on mount for users who have already consented
+  useEffect(() => {
+    if (localStorage.getItem("cookie_consent") === "accepted") {
+      trackEvent("$pageview", { $current_url: window.location.href });
+    }
+  }, []);
+
   // Analytics: section viewed tracking via IntersectionObserver
   useEffect(() => {
     const observed = new Set<string>();
