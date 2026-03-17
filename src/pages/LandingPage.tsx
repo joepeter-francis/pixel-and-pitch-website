@@ -53,11 +53,27 @@ const PROCESS_STEPS = [
   { n: "06", title: "Handoff", desc: "Documentation, training & optional ongoing maintenance" },
 ];
 
+const GREETINGS: Record<string, string | string[]> = {
+  IN: ["नमस्ते", "ਸਤ ਸ੍ਰੀ ਅਕਾਲ", "నమస్కారం", "வணக்கம்", "নমস্কার", "નમસ્તે"],
+  FR: "Bonjour", DE: "Hallo", ES: "Hola", IT: "Ciao",
+  JP: "こんにちは", CN: "你好", KR: "안녕하세요",
+  BR: "Olá", PT: "Olá", RU: "Привет",
+  AE: "مرحباً", SA: "مرحباً", PK: "آداب",
+  BD: "নমস্কার", LK: "ආයුබෝවන්",
+};
+
+function getGreeting(code: string): string {
+  const g = GREETINGS[code] || "Hello";
+  return Array.isArray(g) ? g[Math.floor(Math.random() * g.length)] : g;
+}
+
 export default function LandingPage() {
   const [dark, setDark] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", product_interest: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [countryCode, setCountryCode] = useState("");
+  const [displayedGreeting, setDisplayedGreeting] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -65,6 +81,33 @@ export default function LandingPage() {
     setDark(isDark);
     document.documentElement.classList.toggle("dark", isDark);
   }, []);
+
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then(r => r.json())
+      .then(d => setCountryCode(d.country_code || "__"))
+      .catch(() => setCountryCode("__"));
+  }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setCountryCode(prev => prev || "__");
+    }, 2500);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (!countryCode) return;
+    const word = getGreeting(countryCode);
+    let i = 0;
+    setDisplayedGreeting("");
+    const timer = setInterval(() => {
+      i++;
+      setDisplayedGreeting(word.slice(0, i));
+      if (i >= word.length) clearInterval(timer);
+    }, 60);
+    return () => clearInterval(timer);
+  }, [countryCode]);
 
   const toggleTheme = () => {
     const next = !dark;
@@ -154,21 +197,24 @@ export default function LandingPage() {
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-300 mb-8">
-              <Star className="h-3 w-3" /> Trusted by early-stage entrepreneurs across India
+              <Star className="h-3 w-3" /> Built in India with 💜 · For the world
             </div>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.05] mb-6"
-          >
-            Your Gateway{" "}
-            <span className="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
-              to the World
-            </span>
-          </motion.h1>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="mb-6">
+            <p className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tight leading-none mb-3">
+              <span className="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
+                {displayedGreeting || "\u00A0"}
+              </span>
+              {displayedGreeting.length < getGreeting(countryCode || "__").length && (
+                <span className="animate-pulse text-purple-400">|</span>
+              )}
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+              Your brand deserves<br />
+              <span className="text-gray-400 font-medium">a home on the internet.</span>
+            </h1>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
