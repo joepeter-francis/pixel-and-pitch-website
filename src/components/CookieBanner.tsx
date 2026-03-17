@@ -16,7 +16,6 @@ export default function CookieBanner() {
     localStorage.setItem("cookie_consent", "accepted");
     posthog.opt_in_capturing();
     posthog.capture("$pageview", { $current_url: window.location.href });
-    posthog.flush(); // force-send immediately, don't wait for batch timer
     setVisible(false);
   };
 
