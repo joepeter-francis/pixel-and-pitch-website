@@ -15,6 +15,8 @@ export default function CookieBanner() {
   const accept = () => {
     localStorage.setItem("cookie_consent", "accepted");
     posthog.opt_in_capturing();
+    // Manually fire pageview since the initial one was suppressed while opted-out
+    posthog.capture("$pageview", { $current_url: window.location.href });
     setVisible(false);
   };
 
