@@ -3,8 +3,8 @@ import { motion, useInView } from "framer-motion";
 import { toast } from "sonner";
 import {
   ShoppingBag, Zap, Check, ArrowRight, Menu, X, Sun, Moon,
-  Mail, Phone, MessageSquare, ChevronRight, Star, Layers,
-  Globe, Code2, Paintbrush, TrendingUp, Headphones, Search, Database, Settings
+  Mail, ChevronRight, Star,
+  Globe, Paintbrush, TrendingUp, Headphones, Search, Database
 } from "lucide-react";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
