@@ -58,6 +58,36 @@ const PROCESS_STEPS = [
 type TimeSlot = "midnight" | "earlyMorning" | "morning" | "afternoon" | "evening" | "night";
 type WeatherKey = "sunny" | "rainy" | "cloudy" | "foggy" | "snowy" | "stormy";
 
+const RETURNING_TAGLINES: string[] = [
+  "Oh look, you're back. The contact form missed you.",
+  "Second visit? The form is literally right there. Scroll down. Go on.",
+  "You came back. That means we did something right. The form is a hint.",
+  "Returning visitor spotted. Our inbox is still empty. Coincidence?",
+  "Bold move coming back without filling the form. Respect. Now fill it.",
+  "You. Again. We like you. The form likes you too.",
+  "Still browsing? The form takes 47 seconds. We timed it.",
+  "Back again? Either you love us or you forgot to scroll to the form.",
+  "Our analytics noticed. Our contact form is hurt. Please help.",
+  "Round two. Are you going to fill the form this time or are we doing round three?",
+  "You've seen the site. You like the site. The site has a form. Just saying.",
+  "We're not saying you should fill the form. But the form is saying it.",
+  "Third time lucky? Or just form-phobic? No judgment. Okay, a little judgment.",
+  "You keep coming back like you own the place. You could — just fill the form.",
+  "Our servers literally said 'oh it's you again'. Fill the form and make it official.",
+  "You're basically family at this point. Family fills forms.",
+  "We added a fun form. Okay it's a normal form. But it leads to great things.",
+  "Still here? The form is 5 fields. Your attention span is longer than that.",
+  "Every time you visit without contacting us, a pixel cries. Don't do it to the pixels.",
+  "We noticed. We're not mad. We're just going to keep showing up until you do.",
+];
+
+function getVisitCount(): number {
+  const raw = localStorage.getItem("pnp_visit_count");
+  const count = raw ? parseInt(raw, 10) + 1 : 1;
+  localStorage.setItem("pnp_visit_count", String(count));
+  return count;
+}
+
 const TAGLINES: Record<TimeSlot, string[]> & { weather: Record<WeatherKey, string[]> } = {
   midnight: [
     "Midnight and still building? Legends work these hours.",
@@ -218,7 +248,10 @@ function getWeatherKey(wmoCode: number): WeatherKey | null {
   return null;
 }
 
-function pickTagline(slot: TimeSlot, weather: WeatherKey | null): string {
+function pickTagline(slot: TimeSlot, weather: WeatherKey | null, visitCount: number): string {
+  if (visitCount >= 2) {
+    return RETURNING_TAGLINES[Math.floor(Math.random() * RETURNING_TAGLINES.length)];
+  }
   const base = TAGLINES[slot];
   const pool = weather ? [...base, ...TAGLINES.weather[weather]] : base;
   return pool[Math.floor(Math.random() * pool.length)];
@@ -232,6 +265,7 @@ export default function LandingPage() {
   const [tagline, setTagline] = useState("");
   const [displayedTagline, setDisplayedTagline] = useState("");
   const [formTouched, setFormTouched] = useState(false);
+  const visitCount = useRef(getVisitCount());
 
   const productsRef = useRef<HTMLElement>(null);
   const exclusiveRef = useRef<HTMLElement>(null);
@@ -261,16 +295,16 @@ export default function LandingPage() {
             // weather is optional — silently ignore
           }
         }
-        setTagline(pickTagline(getTimeSlot(), weather));
+        setTagline(pickTagline(getTimeSlot(), weather, visitCount.current));
       })
       .catch(() => {
-        setTagline(pickTagline(getTimeSlot(), null));
+        setTagline(pickTagline(getTimeSlot(), null, visitCount.current));
       });
   }, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setTagline(prev => prev || pickTagline(getTimeSlot(), null));
+      setTagline(prev => prev || pickTagline(getTimeSlot(), null, visitCount.current));
     }, 2500);
     return () => clearTimeout(timeout);
   }, []);
