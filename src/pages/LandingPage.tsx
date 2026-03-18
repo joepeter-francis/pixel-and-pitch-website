@@ -324,6 +324,28 @@ export default function LandingPage() {
     return () => clearInterval(timer);
   }, [tagline]);
 
+  // FAQ JSON-LD schema
+  useEffect(() => {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What is the Pixel & Pitch Marketplace?", "acceptedAnswer": { "@type": "Answer", "text": "The Pixel & Pitch Marketplace is a self-serve platform where Indian brands can launch their own product catalog online in minutes — no code required." } },
+        { "@type": "Question", "name": "How much does it cost to list my brand on the Marketplace?", "acceptedAnswer": { "@type": "Answer", "text": "The Marketplace plan starts at ₹499 per month. A Pro plan at ₹799/month adds payment gateway setup." } },
+        { "@type": "Question", "name": "Do I need a developer to set up my store?", "acceptedAnswer": { "@type": "Answer", "text": "No. You can set up your entire catalog — logo, products, theme, and branding — yourself through our onboarding flow in under 15 minutes." } },
+        { "@type": "Question", "name": "Can I accept payments through my catalog?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Pro plan includes Razorpay payment gateway integration, supporting UPI, cards, and net banking." } },
+        { "@type": "Question", "name": "Is my catalog visible on Google?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Each brand's catalog page is publicly accessible and indexed by search engines, giving your brand organic visibility." } },
+        { "@type": "Question", "name": "What is the difference between the Marketplace plan and an Exclusive website?", "acceptedAnswer": { "@type": "Answer", "text": "The Marketplace plan gives you a catalog page hosted on marketplace.pixelndpitch.com. An Exclusive website is a fully custom-built standalone website on your own domain." } },
+      ],
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "faq-schema";
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+    return () => { document.getElementById("faq-schema")?.remove(); };
+  }, []);
+
   // Analytics: section viewed tracking via IntersectionObserver
   useEffect(() => {
     const observed = new Set<string>();
@@ -552,7 +574,10 @@ export default function LandingPage() {
                           <p className="font-bold text-gray-900 dark:text-white text-sm">Basic</p>
                           <p className="text-xs text-gray-400">No payment gateway</p>
                         </div>
-                        <p className="text-2xl font-black text-gray-900 dark:text-white">₹499</p>
+                        <div className="text-right">
+                          <p className="text-2xl font-black text-gray-900 dark:text-white">₹499</p>
+                          <p className="text-[10px] text-gray-400 font-medium">per month</p>
+                        </div>
                       </div>
                       <div className="border-t border-gray-200 dark:border-gray-700 pt-2.5 flex justify-between items-center">
                         <div>
@@ -725,8 +750,38 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── FAQ ── */}
+      <section className="py-24 bg-white dark:bg-gray-950">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <FadeIn className="text-center mb-12">
+            <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">FAQ</p>
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Common questions</h2>
+          </FadeIn>
+          <div className="space-y-4">
+            {[
+              { q: "What is the Pixel & Pitch Marketplace?", a: "The Pixel & Pitch Marketplace is a self-serve platform where Indian brands can launch their own product catalog online in minutes — no code required. Customers can browse, discover, and shop directly from each brand's catalog." },
+              { q: "How much does it cost to list my brand on the Marketplace?", a: "The Marketplace plan starts at ₹499 per month. This includes your own catalog page, up to 50 products, and a shareable link. A Pro plan at ₹799/month adds payment gateway setup done by us." },
+              { q: "Do I need a developer to set up my store?", a: "No. You can set up your entire catalog — logo, products, theme, and branding — yourself through our onboarding flow. It takes under 15 minutes. We also offer fully custom website builds if you need something beyond the self-serve plan." },
+              { q: "Can I accept payments through my catalog?", a: "Yes. The Pro plan includes Razorpay payment gateway integration, supporting UPI, cards, and net banking. The Basic plan supports COD and inquiry-based orders." },
+              { q: "Is my catalog visible on Google?", a: "Yes. Each brand's catalog page is publicly accessible and indexed by search engines, giving your brand organic visibility." },
+              { q: "What is the difference between the Marketplace plan and an Exclusive website?", a: "The Marketplace plan gives you a catalog page hosted on marketplace.pixelndpitch.com. An Exclusive website is a fully custom-built, standalone website on your own domain — designed and developed by our team, with advanced features like custom checkout, CRM integrations, and more." },
+            ].map((item, i) => (
+              <FadeIn key={i} delay={i * 0.05}>
+                <details className="group rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 open:bg-white dark:open:bg-gray-900 transition-all">
+                  <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-bold text-gray-900 dark:text-white text-sm list-none select-none">
+                    {item.q}
+                    <span className="shrink-0 text-purple-500 text-lg leading-none group-open:rotate-45 transition-transform duration-200">+</span>
+                  </summary>
+                  <p className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.a}</p>
+                </details>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CONTACT ── */}
-      <section id="contact" ref={contactRef} data-section="contact" className="py-24 bg-white dark:bg-gray-950">
+      <section id="contact" ref={contactRef} data-section="contact" className="py-24 bg-gray-50 dark:bg-gray-900/50">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <FadeIn className="text-center mb-12">
             <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Get in Touch</p>
