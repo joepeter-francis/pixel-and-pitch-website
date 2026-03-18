@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import {
   ShoppingBag, Zap, Check, ArrowRight, Menu, X, Sun, Moon,
@@ -269,6 +269,20 @@ export default function LandingPage() {
   const [formTouched, setFormTouched] = useState(false);
   const visitCount = useRef(getVisitCount());
 
+  // Intro overlay — shown only on first ever visit
+  const [showIntro, setShowIntro] = useState(() => localStorage.getItem("pnp_intro_seen") !== "1");
+  const [introExiting, setIntroExiting] = useState(false);
+  const [typingDone, setTypingDone] = useState(false);
+  const dismissedRef = useRef(false);
+
+  const dismissIntro = useCallback(() => {
+    if (dismissedRef.current) return;
+    dismissedRef.current = true;
+    localStorage.setItem("pnp_intro_seen", "1");
+    setIntroExiting(true);
+    setTimeout(() => setShowIntro(false), 900);
+  }, []);
+
   const productsRef = useRef<HTMLElement>(null);
   const exclusiveRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
@@ -323,6 +337,22 @@ export default function LandingPage() {
     }, speed);
     return () => clearInterval(timer);
   }, [tagline]);
+
+  // Mark typing done + auto-dismiss after 1.5s pause
+  useEffect(() => {
+    if (!showIntro || !tagline || displayedTagline.length < tagline.length) return;
+    setTypingDone(true);
+    const t = setTimeout(dismissIntro, 1500);
+    return () => clearTimeout(t);
+  }, [displayedTagline, tagline, showIntro, dismissIntro]);
+
+  // Scroll or click anywhere on overlay to skip
+  useEffect(() => {
+    if (!showIntro) return;
+    const onScroll = () => dismissIntro();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [showIntro, dismissIntro]);
 
   // FAQ JSON-LD schema
   useEffect(() => {
@@ -423,6 +453,65 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 font-[Inter]">
+
+      {/* ── INTRO OVERLAY (first visit only) ── */}
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: introExiting ? 0 : 1 }}
+            transition={{ duration: 0.9, ease: "easeInOut" }}
+            onClick={dismissIntro}
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center cursor-pointer select-none"
+            style={{
+              background: "linear-gradient(135deg, #1e0a3c 0%, #0f0720 45%, #030712 100%)",
+            }}
+          >
+            {/* Radial glow */}
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(147,51,234,0.35) 0%, transparent 65%)" }} />
+            {/* Grid texture */}
+            <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+              style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
+
+            {/* Logo */}
+            <motion.img
+              src={LOGO}
+              alt="Pixel & Pitch"
+              className="h-12 w-auto mb-10 relative z-10 opacity-90"
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 0.9, y: 0 }}
+              transition={{ duration: 0.7 }}
+            />
+
+            {/* Typewriter phrase */}
+            <div className="relative z-10 text-center px-6 max-w-3xl">
+              <p className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight min-h-[4rem]">
+                <span className="bg-gradient-to-r from-purple-400 via-violet-300 to-purple-400 bg-clip-text text-transparent">
+                  {displayedTagline || <span className="opacity-0">.</span>}
+                </span>
+                {tagline && displayedTagline.length < tagline.length && (
+                  <span className="animate-pulse text-purple-400">|</span>
+                )}
+                {!tagline && (
+                  <span className="animate-pulse text-purple-400">|</span>
+                )}
+              </p>
+            </div>
+
+            {/* Skip hint — appears after typing */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: typingDone ? 0.35 : 0 }}
+              transition={{ duration: 0.6 }}
+              className="absolute bottom-10 text-[11px] font-medium tracking-[0.2em] uppercase text-gray-400 z-10"
+            >
+              scroll or click to continue
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── NAVBAR ── */}
       <header className="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl">
@@ -567,7 +656,7 @@ export default function LandingPage() {
 
                   {/* Pricing */}
                   <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5 mb-7">
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">One-time setup</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Monthly subscription</p>
                     <div className="space-y-2.5">
                       <div className="flex justify-between items-center">
                         <div>
@@ -584,14 +673,20 @@ export default function LandingPage() {
                           <p className="font-bold text-purple-600 dark:text-purple-400 text-sm">Pro</p>
                           <p className="text-xs text-gray-400">Gateway setup done by us</p>
                         </div>
-                        <p className="text-2xl font-black text-purple-600 dark:text-purple-400">₹799</p>
+                        <div className="text-right">
+                          <p className="text-2xl font-black text-purple-600 dark:text-purple-400">₹799</p>
+                          <p className="text-[10px] text-gray-400 font-medium">per month</p>
+                        </div>
                       </div>
                       <div className="border-t border-gray-200 dark:border-gray-700 pt-2.5 flex justify-between items-center">
                         <div>
                           <p className="font-bold text-gray-900 dark:text-white text-sm">+ Analytics Dashboard</p>
                           <p className="text-xs text-gray-400">Visitor data, product views, funnel</p>
                         </div>
-                        <p className="text-lg font-black text-gray-500 dark:text-gray-400">+₹99</p>
+                        <div className="text-right">
+                          <p className="text-lg font-black text-gray-500 dark:text-gray-400">+₹99</p>
+                          <p className="text-[10px] text-gray-400 font-medium">per month</p>
+                        </div>
                       </div>
                     </div>
                   </div>
