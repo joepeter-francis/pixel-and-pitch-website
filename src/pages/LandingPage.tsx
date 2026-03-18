@@ -833,8 +833,8 @@ export default function LandingPage() {
               { Icon: Code2, title: "Modern Stack", desc: "React, Next.js, AWS, Vercel, Cloudflare — the tools top products use." },
               { Icon: Users, title: "End-to-End", desc: "From idea to launch to support. One team, full accountability." },
             ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.1}>
-                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7 text-center">
+              <FadeIn key={item.title} delay={i * 0.1} className="h-full">
+                <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7 text-center">
                   <div className="flex justify-center mb-4"><item.Icon className="h-8 w-8 text-purple-500" /></div>
                   <h4 className="font-black text-gray-900 dark:text-white text-lg mb-2">{item.title}</h4>
                   <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
