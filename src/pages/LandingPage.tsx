@@ -347,9 +347,17 @@ export default function LandingPage() {
   // Scroll or click anywhere on overlay to skip
   useEffect(() => {
     if (!showIntro) return;
-    const onScroll = () => dismissIntro();
+    // Lock body scroll while overlay is visible so accidental micro-scrolls
+    // during page load don't trigger dismissal
+    document.body.style.overflow = "hidden";
+    const onScroll = () => {
+      if (window.scrollY > 80) dismissIntro();
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [showIntro, dismissIntro]);
 
   // FAQ JSON-LD schema
