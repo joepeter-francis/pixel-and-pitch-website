@@ -347,16 +347,23 @@ export default function LandingPage() {
   // Scroll or click anywhere on overlay to skip
   useEffect(() => {
     if (!showIntro) return;
-    // Lock body scroll while overlay is visible so accidental micro-scrolls
-    // during page load don't trigger dismissal
     document.body.style.overflow = "hidden";
-    const onScroll = () => {
-      if (window.scrollY > 80) dismissIntro();
+    // wheel fires even when body scroll is locked
+    const onWheel = (e: WheelEvent) => { if (e.deltaY > 10) dismissIntro(); };
+    // touch scroll for mobile
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchStartY - e.touches[0].clientY > 20) dismissIntro();
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
     return () => {
       document.body.style.overflow = "";
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
     };
   }, [showIntro, dismissIntro]);
 
