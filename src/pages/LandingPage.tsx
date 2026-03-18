@@ -468,8 +468,7 @@ export default function LandingPage() {
             initial={{ opacity: 1 }}
             animate={{ opacity: introExiting ? 0 : 1 }}
             transition={{ duration: 0.9, ease: "easeInOut" }}
-            onClick={dismissIntro}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center cursor-pointer select-none"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none"
             style={{
               background: "linear-gradient(135deg, #1e0a3c 0%, #0f0720 45%, #030712 100%)",
             }}
@@ -506,22 +505,21 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Scroll indicator — appears after typing, bounces to invite scroll */}
+            {/* Scroll indicator — pill with bouncing bubble, appears after typing */}
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: typingDone ? 1 : 0, y: typingDone ? 0 : 8 }}
-              transition={{ duration: 0.6 }}
-              className="absolute bottom-10 z-10 flex flex-col items-center gap-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: typingDone ? 1 : 0 }}
+              transition={{ duration: 0.7 }}
+              className="absolute bottom-10 z-10 flex flex-col items-center gap-2"
             >
-              <span className="text-[10px] font-semibold tracking-[0.25em] uppercase text-purple-400/60">scroll</span>
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-purple-400/70">
-                  <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </motion.div>
+              <div className="w-6 h-10 rounded-full border-2 border-purple-400/40 flex items-start justify-center pt-1.5">
+                <motion.div
+                  className="w-1.5 h-1.5 rounded-full bg-purple-400/80"
+                  animate={{ y: [0, 14, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </div>
+              <span className="text-[9px] font-semibold tracking-[0.3em] uppercase text-purple-400/40">scroll</span>
             </motion.div>
           </motion.div>
         )}
