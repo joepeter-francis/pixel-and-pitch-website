@@ -338,13 +338,11 @@ export default function LandingPage() {
     return () => clearInterval(timer);
   }, [tagline]);
 
-  // Mark typing done + auto-dismiss after 1.5s pause
+  // Mark typing done — no auto-dismiss, user scrolls to continue
   useEffect(() => {
     if (!showIntro || !tagline || displayedTagline.length < tagline.length) return;
     setTypingDone(true);
-    const t = setTimeout(dismissIntro, 1500);
-    return () => clearTimeout(t);
-  }, [displayedTagline, tagline, showIntro, dismissIntro]);
+  }, [displayedTagline, tagline, showIntro]);
 
   // Scroll or click anywhere on overlay to skip
   useEffect(() => {
@@ -500,15 +498,23 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Skip hint — appears after typing */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: typingDone ? 0.35 : 0 }}
+            {/* Scroll indicator — appears after typing, bounces to invite scroll */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: typingDone ? 1 : 0, y: typingDone ? 0 : 8 }}
               transition={{ duration: 0.6 }}
-              className="absolute bottom-10 text-[11px] font-medium tracking-[0.2em] uppercase text-gray-400 z-10"
+              className="absolute bottom-10 z-10 flex flex-col items-center gap-1"
             >
-              scroll or click to continue
-            </motion.p>
+              <span className="text-[10px] font-semibold tracking-[0.25em] uppercase text-purple-400/60">scroll</span>
+              <motion.div
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-purple-400/70">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
