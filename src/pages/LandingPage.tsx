@@ -654,10 +654,8 @@ export default function LandingPage() {
                   <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 dark:bg-purple-900/40 px-3 py-1 text-xs font-bold text-purple-700 dark:text-purple-300 mb-5">
                     <ShoppingBag className="h-3.5 w-3.5" /> Self-Serve · Live in Minutes
                   </div>
-                  <div className="h-0 overflow-visible">
-                    <img src="/marketplace-logo.png" alt="Pixel & Pitch Marketplace" className="h-[190px] object-contain object-left" />
-                  </div>
-                  <p className="pt-[190px] text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Marketplace</h3>
+                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                     Launch your product catalog in a few clicks. No coding required. Built for early-stage entrepreneurs who want a professional online presence without the hefty price tag.
                   </p>
                   <ul className="space-y-2.5 mb-8">
@@ -728,7 +726,7 @@ export default function LandingPage() {
                   <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-5">
                     <Zap className="h-3.5 w-3.5" /> Custom Built · Tailored to You
                   </div>
-                  <img src="/exclusive-logo.png" alt="Pixel & Pitch Exclusive" className="h-[90px] object-contain object-left mb-3" />
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Exclusive</h3>
                   <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                     Custom digital solutions built from scratch. Five engagement tiers — from lightweight landing pages to full enterprise platforms. We handle design, development, and deployment.
                   </p>
