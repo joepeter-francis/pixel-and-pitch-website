@@ -648,13 +648,13 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Marketplace Card */}
             <FadeIn delay={0.1}>
-              <div className="relative h-full rounded-3xl border border-purple-500/30 bg-white dark:bg-gray-900 p-8 shadow-xl shadow-purple-500/5 flex flex-col overflow-hidden">
+              <div onClick={() => window.open("https://marketplace.pixelndpitch.com", "_blank")} className="relative h-full rounded-3xl border border-purple-500/30 bg-white dark:bg-gray-900 p-8 shadow-xl shadow-purple-500/5 flex flex-col overflow-hidden cursor-pointer transition-transform hover:-translate-y-1">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-purple-500/10 to-transparent rounded-3xl" />
                 <div className="relative">
                   <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 dark:bg-purple-900/40 px-3 py-1 text-xs font-bold text-purple-700 dark:text-purple-300 mb-5">
                     <ShoppingBag className="h-3.5 w-3.5" /> Self-Serve · Live in Minutes
                   </div>
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Marketplace</h3>
+                  <img src="/marketplace-logo.png" alt="Pixel & Pitch Marketplace" className="h-12 object-contain mb-3" />
                   <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                     Launch your product catalog in a few clicks. No coding required. Built for early-stage entrepreneurs who want a professional online presence without the hefty price tag.
                   </p>
@@ -720,13 +720,13 @@ export default function LandingPage() {
 
             {/* Exclusive Card */}
             <FadeIn delay={0.2}>
-              <div className="relative h-full rounded-3xl border border-emerald-500/30 bg-white dark:bg-gray-900 p-8 shadow-xl shadow-emerald-500/5 flex flex-col overflow-hidden">
+              <div onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })} className="relative h-full rounded-3xl border border-emerald-500/30 bg-white dark:bg-gray-900 p-8 shadow-xl shadow-emerald-500/5 flex flex-col overflow-hidden cursor-pointer transition-transform hover:-translate-y-1">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-3xl" />
                 <div className="relative flex-1 flex flex-col">
                   <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-5">
                     <Zap className="h-3.5 w-3.5" /> Custom Built · Tailored to You
                   </div>
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Exclusive</h3>
+                  <img src="/exclusive-logo.png" alt="Pixel & Pitch Exclusive" className="h-12 object-contain mb-3" />
                   <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                     Custom digital solutions built from scratch. Five engagement tiers — from lightweight landing pages to full enterprise platforms. We handle design, development, and deployment.
                   </p>
