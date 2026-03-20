@@ -654,7 +654,9 @@ export default function LandingPage() {
                   <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 dark:bg-purple-900/40 px-3 py-1 text-xs font-bold text-purple-700 dark:text-purple-300 mb-5">
                     <ShoppingBag className="h-3.5 w-3.5" /> Self-Serve · Live in Minutes
                   </div>
-                  <img src="/marketplace-logo.png" alt="Pixel & Pitch Marketplace" className="h-12 object-contain mb-3" />
+                  <div className="h-0 overflow-visible">
+                    <img src="/marketplace-logo.png" alt="Pixel & Pitch Marketplace" className="h-[190px] object-contain" />
+                  </div>
                   <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                     Launch your product catalog in a few clicks. No coding required. Built for early-stage entrepreneurs who want a professional online presence without the hefty price tag.
                   </p>
