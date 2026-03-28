@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { api, getStoredUser, clearAuth } from "../../lib/api";
-import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2, Store, Search, Star, Megaphone, TrendingUp, MousePointerClick, Video, Clock, ArrowDownRight } from "lucide-react";
+import { LogOut, Plus, Trash2, RefreshCw, ExternalLink, Globe, Smartphone, Monitor, Link2, Store, Search, Star, Megaphone, TrendingUp, MousePointerClick, Video, Clock, ArrowDownRight, ChevronDown, ChevronUp } from "lucide-react";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
 
@@ -81,6 +81,14 @@ interface AdminTenant {
   owner_email: string | null;
 }
 
+interface StoreCategory {
+  id: string;
+  name: string;
+  description: string | null;
+  display_order: number;
+  featured_type: string | null;
+}
+
 const STATUS_DISPLAY: Record<string, string> = {
   new: "New",
   pursuing: "Pursuing",
@@ -108,6 +116,10 @@ export default function AdminDashboard() {
   const [stores, setStores] = useState<AdminTenant[]>([]);
   const [storesLoading, setStoresLoading] = useState(false);
   const [storeSearch, setStoreSearch] = useState("");
+  const [expandedStoreId, setExpandedStoreId] = useState<string | null>(null);
+  const [categoriesByStore, setCategoriesByStore] = useState<Record<string, StoreCategory[]>>({});
+  const [loadingCategoriesFor, setLoadingCategoriesFor] = useState<Record<string, boolean>>({});
+  const [savingCategory, setSavingCategory] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
@@ -321,6 +333,35 @@ export default function AdminDashboard() {
       if (err instanceof Error && err.message.includes("401")) { clearAuth(); navigate("/admin"); return; }
       toast.error("Failed to update store");
     }
+  };
+
+  const toggleExpandStore = async (storeId: string) => {
+    if (expandedStoreId === storeId) { setExpandedStoreId(null); return; }
+    setExpandedStoreId(storeId);
+    if (categoriesByStore[storeId]) return; // already loaded
+    setLoadingCategoriesFor(prev => ({ ...prev, [storeId]: true }));
+    try {
+      const cats = await api.get<StoreCategory[]>(`/admin/categories?tenantId=${storeId}`);
+      setCategoriesByStore(prev => ({ ...prev, [storeId]: cats || [] }));
+    } catch {
+      toast.error("Failed to load collections");
+    }
+    setLoadingCategoriesFor(prev => ({ ...prev, [storeId]: false }));
+  };
+
+  const setCollectionFeaturedType = async (categoryId: string, storeId: string, featuredType: "ad" | "pick" | null) => {
+    setSavingCategory(prev => ({ ...prev, [categoryId]: true }));
+    try {
+      const updated = await api.patch<StoreCategory>(`/admin/categories/${categoryId}/feature`, { featured_type: featuredType });
+      setCategoriesByStore(prev => ({
+        ...prev,
+        [storeId]: (prev[storeId] || []).map(c => c.id === categoryId ? { ...c, featured_type: updated.featured_type } : c),
+      }));
+      toast.success(featuredType ? `Collection set as ${featuredType === "ad" ? "Ad" : "P&P Pick"}` : "Collection untagged");
+    } catch {
+      toast.error("Failed to update collection");
+    }
+    setSavingCategory(prev => ({ ...prev, [categoryId]: false }));
   };
 
   const filteredLeads = filterStatus === "all" ? leads : leads.filter(l => l.status === filterStatus);
@@ -937,83 +978,136 @@ export default function AdminDashboard() {
                     {stores
                       .filter(s => !storeSearch || s.company_name.toLowerCase().includes(storeSearch.toLowerCase()) || s.slug.toLowerCase().includes(storeSearch.toLowerCase()))
                       .map(store => (
-                        <tr key={store.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-800/40 transition-colors">
-                          <td className="px-5 py-4">
-                            <p className="font-semibold text-white text-sm">{store.company_name}</p>
-                            <p className="text-xs text-gray-500">/{store.slug}</p>
-                          </td>
-                          <td className="px-5 py-4 hidden sm:table-cell">
-                            <p className="text-xs text-gray-400 truncate max-w-[160px]">{store.owner_email || "—"}</p>
-                          </td>
-                          <td className="px-5 py-4">
-                            <div className="flex flex-col gap-1">
-                              <span className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-bold ${store.is_published ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
-                                {store.is_published ? "Live" : "Draft"}
-                              </span>
-                              {store.is_disabled && (
-                                <span className="w-fit rounded-full px-2 py-0.5 text-[10px] font-bold bg-red-500/20 text-red-400">
-                                  Disabled
+                        <Fragment key={store.id}>
+                          {/* Store row */}
+                          <tr className={`border-b border-gray-800 transition-colors ${expandedStoreId === store.id ? "bg-gray-800/60" : "hover:bg-gray-800/40"}`}>
+                            <td className="px-5 py-4">
+                              <p className="font-semibold text-white text-sm">{store.company_name}</p>
+                              <p className="text-xs text-gray-500">/{store.slug}</p>
+                            </td>
+                            <td className="px-5 py-4 hidden sm:table-cell">
+                              <p className="text-xs text-gray-400 truncate max-w-[160px]">{store.owner_email || "—"}</p>
+                            </td>
+                            <td className="px-5 py-4">
+                              <div className="flex flex-col gap-1">
+                                <span className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-bold ${store.is_published ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
+                                  {store.is_published ? "Live" : "Draft"}
                                 </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-5 py-4 hidden lg:table-cell">
-                            <div className="flex flex-col gap-1">
-                              <button
-                                onClick={() => toggleFeatured(store.id, store.is_featured)}
-                                title={store.is_featured ? "Remove from Featured (Ad)" : "Mark as Featured (Ad)"}
-                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all w-fit ${
-                                  store.is_featured
-                                    ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/40"
-                                    : "bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-gray-300"
-                                }`}
-                              >
-                                <Megaphone className="h-3 w-3" />
-                                {store.is_featured ? "Ad" : "Ad?"}
-                              </button>
-                              <button
-                                onClick={() => toggleRecommended(store.id, store.is_recommended)}
-                                title={store.is_recommended ? "Remove from P&P Picks" : "Add to P&P Picks"}
-                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all w-fit ${
-                                  store.is_recommended
-                                    ? "bg-violet-500/20 text-violet-400 hover:bg-violet-500/40"
-                                    : "bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-gray-300"
-                                }`}
-                              >
-                                <Star className="h-3 w-3" />
-                                {store.is_recommended ? "Pick" : "Pick?"}
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-5 py-4 hidden md:table-cell">
-                            <p className="text-xs text-gray-500">
-                              {new Date(store.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                            </p>
-                          </td>
-                          <td className="px-5 py-4">
-                            <div className="flex items-center justify-end gap-2">
-                              <a
-                                href={`https://marketplace.pixelndpitch.com/${store.slug}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-gray-700 transition-all"
-                                title="View store"
-                              >
-                                <ExternalLink className="h-3.5 w-3.5" />
-                              </a>
-                              <button
-                                onClick={() => toggleDisabled(store.id, store.is_disabled)}
-                                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                                  store.is_disabled
-                                    ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40"
-                                    : "bg-red-600/20 text-red-400 hover:bg-red-600/40"
-                                }`}
-                              >
-                                {store.is_disabled ? "Re-enable" : "Disable"}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                                {store.is_disabled && (
+                                  <span className="w-fit rounded-full px-2 py-0.5 text-[10px] font-bold bg-red-500/20 text-red-400">Disabled</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 hidden lg:table-cell">
+                              <div className="flex flex-col gap-1">
+                                <button
+                                  onClick={() => toggleFeatured(store.id, store.is_featured)}
+                                  title={store.is_featured ? "Remove from Featured (Ad)" : "Mark as Featured (Ad)"}
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all w-fit ${store.is_featured ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/40" : "bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-gray-300"}`}
+                                >
+                                  <Megaphone className="h-3 w-3" />
+                                  {store.is_featured ? "Ad" : "Ad?"}
+                                </button>
+                                <button
+                                  onClick={() => toggleRecommended(store.id, store.is_recommended)}
+                                  title={store.is_recommended ? "Remove from P&P Picks" : "Add to P&P Picks"}
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all w-fit ${store.is_recommended ? "bg-violet-500/20 text-violet-400 hover:bg-violet-500/40" : "bg-gray-700 text-gray-500 hover:bg-gray-600 hover:text-gray-300"}`}
+                                >
+                                  <Star className="h-3 w-3" />
+                                  {store.is_recommended ? "Pick" : "Pick?"}
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 hidden md:table-cell">
+                              <p className="text-xs text-gray-500">
+                                {new Date(store.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                              </p>
+                            </td>
+                            <td className="px-5 py-4">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => toggleExpandStore(store.id)}
+                                  title={expandedStoreId === store.id ? "Hide collections" : "Show collections"}
+                                  className={`p-1.5 rounded-lg transition-all ${expandedStoreId === store.id ? "bg-violet-500/20 text-violet-400" : "text-gray-500 hover:text-gray-300 hover:bg-gray-700"}`}
+                                >
+                                  {expandedStoreId === store.id
+                                    ? <ChevronUp className="h-3.5 w-3.5" />
+                                    : <ChevronDown className="h-3.5 w-3.5" />}
+                                </button>
+                                <a
+                                  href={`https://marketplace.pixelndpitch.com/${store.slug}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-gray-700 transition-all"
+                                  title="View store"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                </a>
+                                <button
+                                  onClick={() => toggleDisabled(store.id, store.is_disabled)}
+                                  className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${store.is_disabled ? "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40" : "bg-red-600/20 text-red-400 hover:bg-red-600/40"}`}
+                                >
+                                  {store.is_disabled ? "Re-enable" : "Disable"}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+
+                          {/* Expandable collections row */}
+                          {expandedStoreId === store.id && (
+                            <tr className="border-b border-gray-800">
+                              <td colSpan={6} className="bg-gray-900/60 px-5 py-4">
+                                {loadingCategoriesFor[store.id] ? (
+                                  <p className="text-xs text-gray-500 animate-pulse">Loading collections...</p>
+                                ) : (categoriesByStore[store.id] || []).length === 0 ? (
+                                  <p className="text-xs text-gray-600">No collections found for this store.</p>
+                                ) : (
+                                  <div>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">
+                                      Collections — tag to feature on marketplace homepage
+                                    </p>
+                                    <div className="flex flex-col gap-2">
+                                      {(categoriesByStore[store.id] || []).map(cat => (
+                                        <div key={cat.id} className="flex items-center justify-between rounded-xl border border-gray-700 bg-gray-800 px-4 py-2.5">
+                                          <div className="min-w-0 mr-4">
+                                            <p className="text-sm font-semibold text-white">{cat.name}</p>
+                                            {cat.description && <p className="text-xs text-gray-500 truncate">{cat.description}</p>}
+                                          </div>
+                                          <div className="flex items-center gap-1.5 shrink-0">
+                                            {savingCategory[cat.id] ? (
+                                              <div className="h-4 w-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                              <>
+                                                <button
+                                                  onClick={() => setCollectionFeaturedType(cat.id, store.id, null)}
+                                                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${!cat.featured_type ? "bg-gray-600 text-gray-200" : "text-gray-500 hover:bg-gray-700 hover:text-gray-300"}`}
+                                                >
+                                                  None
+                                                </button>
+                                                <button
+                                                  onClick={() => setCollectionFeaturedType(cat.id, store.id, "ad")}
+                                                  className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${cat.featured_type === "ad" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "text-gray-500 hover:bg-amber-500/10 hover:text-amber-400"}`}
+                                                >
+                                                  <Megaphone className="h-3 w-3" /> Ad
+                                                </button>
+                                                <button
+                                                  onClick={() => setCollectionFeaturedType(cat.id, store.id, "pick")}
+                                                  className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${cat.featured_type === "pick" ? "bg-violet-500/20 text-violet-400 border border-violet-500/30" : "text-gray-500 hover:bg-violet-500/10 hover:text-violet-400"}`}
+                                                >
+                                                  <Star className="h-3 w-3" /> Pick
+                                                </button>
+                                              </>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
                       ))}
                     {stores.filter(s => !storeSearch || s.company_name.toLowerCase().includes(storeSearch.toLowerCase()) || s.slug.toLowerCase().includes(storeSearch.toLowerCase())).length === 0 && (
                       <tr>
