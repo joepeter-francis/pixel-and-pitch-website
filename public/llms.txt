@@ -1,0 +1,29 @@
+# Pixel & Pitch
+
+> Pixel & Pitch is a boutique AI and IT services firm in India. We build websites and web applications, customised CRM systems, ERP systems for businesses and colleges, inventory management systems, and online ordering platforms for restaurants, cafés and bakeries, with AI built into the systems we deliver.
+
+Website: https://pixelndpitch.com/
+Sales and quotes: sales@pixelndpitch.com
+Pricing: every project is scoped individually. We do not publish fixed prices; contact sales@pixelndpitch.com for a tailored quote.
+
+## Services
+
+- [Websites & Web Apps](https://pixelndpitch.com/#services): business and portfolio websites, web applications and client portals, SEO and Core Web Vitals, AI chat and lead capture.
+- [Customised CRM](https://pixelndpitch.com/#services): lead and pipeline tracking, customer history, AI lead scoring and follow-up reminders, email, WhatsApp and payment integrations.
+- [ERP for Businesses](https://pixelndpitch.com/#services): accounting and GST-ready invoicing, HR and payroll workflows, procurement and operations, role-based dashboards.
+- [ERP for Colleges](https://pixelndpitch.com/#services): admissions and student records, fee collection, attendance and timetables, student and parent portals.
+- [Inventory Management](https://pixelndpitch.com/#services): multi-location stock tracking, barcode and SKU management, low-stock and expiry alerts, AI demand forecasting.
+- [Ordering Platforms](https://pixelndpitch.com/#services): digital menus, online ordering, custom cake and pre-order requests, UPI and card payments, kitchen order tracking for restaurants, cafés and bakeries.
+- [AI Solutions](https://pixelndpitch.com/#ai): AI assistants and chatbots trained on your data, workflow automation, invoice and document extraction, forecasting, AI-assisted SEO.
+
+## Industries
+
+- Businesses and enterprises
+- Colleges and universities
+- Restaurants and cafés
+- Bakeries and small food brands
+
+## Optional
+
+- [FAQ](https://pixelndpitch.com/#faq): answers on services, AI use, costs and post-launch support.
+- [Contact](https://pixelndpitch.com/#contact): project enquiry form.
