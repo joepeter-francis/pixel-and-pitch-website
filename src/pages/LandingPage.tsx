@@ -969,6 +969,15 @@ export default function LandingPage() {
             <div>
               <img src={LOGO} alt="Pixel & Pitch" className="h-8 w-auto mb-3" />
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Boutique AI and IT services</p>
+              <address className="not-italic text-xs text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
+                Abbigere, Bengaluru, Karnataka 560090, India
+              </address>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Open 24 hours, Monday to Saturday. Closed on Sundays.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <a href="tel:+918197179740" className="hover:text-purple-500 transition-colors">+91 81971 79740</a>
+              </p>
               <p className="text-xs text-gray-400 mt-2">
                 <a href={`mailto:${SALES_EMAIL}`} className="hover:text-purple-500 transition-colors">{SALES_EMAIL}</a>
               </p>
