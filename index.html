@@ -113,9 +113,10 @@
     }
     </script>
   </head>
-  <body>
-    <div id="root">
-      <!-- Pre-rendered content for crawlers and AI search tools that do not run JavaScript. React replaces this on load. -->
+  <body style="background:#030712;margin:0">
+    <div id="root"></div>
+    <noscript>
+      <!-- Shown only to crawlers and visitors without JavaScript. The React app does not render this. -->
       <header>
         <p>Pixel &amp; Pitch, boutique AI and IT services in India</p>
       </header>
@@ -177,7 +178,7 @@
           <p>Address: Abbigere, Bengaluru, Karnataka 560090, India. Open 24 hours, Monday to Saturday; closed on Sundays.</p>
         </section>
       </main>
-    </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
