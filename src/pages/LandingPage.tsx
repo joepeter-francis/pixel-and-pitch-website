@@ -14,6 +14,28 @@ const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af
 const API_URL = import.meta.env.VITE_API_URL || "https://api-marketplace.pixelndpitch.com";
 const SALES_EMAIL = "sales@pixelndpitch.com";
 
+// HubSpot forms (public submission endpoint, no token needed in the browser)
+const HUBSPOT_PORTAL_ID = "248128655";
+const HUBSPOT_FORM_ID = "40833b4b-ff41-4490-8ef9-5db12655ed91";
+const HUBSPOT_URL = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`;
+
+// Maps the "I'm interested in" dropdown value to the label sent to HubSpot's industry field
+const INTEREST_LABELS: Record<string, string> = {
+  website: "Website or web app",
+  crm: "Customised CRM",
+  erp_business: "ERP for business",
+  erp_college: "ERP for college",
+  inventory: "Inventory management",
+  ordering: "Ordering platform (restaurant / bakery)",
+  ai: "AI solutions",
+  general: "General inquiry",
+};
+
+// HubSpot tracking cookie, used only once the visitor has accepted cookies
+function getHubspotUtk(): string | undefined {
+  return document.cookie.split("; ").find(c => c.startsWith("hubspotutk="))?.split("=")[1];
+}
+
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -436,12 +458,40 @@ export default function LandingPage() {
         }),
       };
 
-      const res = await fetch(`${API_URL}/contact`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(enriched),
-      });
-      if (!res.ok) throw new Error("Failed");
+      // Split "Full name" into HubSpot's firstname / lastname fields
+      const [firstname, ...rest] = formData.name.trim().split(/\s+/);
+      const hubspotFields = [
+        { name: "firstname", value: firstname },
+        { name: "lastname", value: rest.join(" ") },
+        { name: "email", value: formData.email },
+        { name: "phone", value: formData.phone },
+        { name: "message", value: formData.message },
+        { name: "industry", value: INTEREST_LABELS[formData.product_interest] ?? "" },
+      ].filter(f => f.value);
+      const hubspotBody = {
+        fields: hubspotFields,
+        context: {
+          pageUri: window.location.href,
+          pageName: document.title,
+          ...(consent && { hutk: getHubspotUtk() }),
+        },
+      };
+
+      // Send to HubSpot and to the existing backend in parallel; succeed if either accepts the lead
+      const [hubspotRes, backendRes] = await Promise.allSettled([
+        fetch(HUBSPOT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(hubspotBody),
+        }),
+        fetch(`${API_URL}/contact`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(enriched),
+        }),
+      ]);
+      const accepted = (r: PromiseSettledResult<Response>) => r.status === "fulfilled" && r.value.ok;
+      if (!accepted(hubspotRes) && !accepted(backendRes)) throw new Error("Failed");
       toast.success("Message sent! We'll get back to you within 24 hours.");
       setFormData({ name: "", email: "", phone: "", product_interest: "", message: "" });
       setFormTouched(false);
