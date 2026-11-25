@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import {
   ArrowRight, Menu, X, Sun, Moon, Mail, ChevronRight, Star,
   Globe, Users, Building2, GraduationCap, Boxes, ChefHat, ShoppingBag,
-  Cake, Bot, Sparkles, Workflow, Database, MapPin, Check, Zap,
+  Cake, Bot, Sparkles, Workflow, Database, MapPin, Check, Zap, MessageCircle,
   type LucideIcon
 } from "lucide-react";
 import { trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
@@ -289,6 +289,19 @@ export default function LandingPage() {
   const aiRef = useRef<HTMLElement>(null);
   const industriesRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const [showBubble, setShowBubble] = useState(false);
+
+  // Show the floating "Contact us" bubble once the first section (hero) has been scrolled past
+  useEffect(() => {
+    const onScroll = () => {
+      const heroBottom = heroRef.current?.offsetHeight ?? window.innerHeight;
+      setShowBubble(window.scrollY > heroBottom - 100);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -558,7 +571,7 @@ export default function LandingPage() {
 
       <main>
         {/* ── HERO ── */}
-        <section aria-labelledby="hero-heading" className="relative overflow-hidden pt-20 pb-32">
+        <section ref={heroRef} aria-labelledby="hero-heading" className="relative overflow-hidden pt-20 pb-32">
           {/* Background gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-purple-950/50 via-gray-950 to-gray-950 dark:from-purple-950/60 dark:via-gray-950 dark:to-gray-950" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(147,51,234,0.15),transparent_60%)]" />
@@ -781,41 +794,26 @@ export default function LandingPage() {
                   We do not publish fixed prices because every business, college and kitchen is different.
                   Contact our team for a tailored, fixed-price quote.
                 </p>
-                <a href={`mailto:${SALES_EMAIL}`}
-                  onClick={() => trackEvent("pricing_cta_clicked", { button: "email_sales" })}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-purple-600 hover:bg-purple-500 px-6 py-3.5 font-bold text-white text-sm transition-all shadow-lg shadow-purple-500/20">
-                  <Mail className="h-4 w-4" aria-hidden="true" /> Contact the team at {SALES_EMAIL}
-                </a>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a href="#contact"
+                    onClick={() => trackEvent("pricing_cta_clicked", { button: "fill_form" })}
+                    className="inline-flex items-center gap-2 rounded-2xl bg-purple-600 hover:bg-purple-500 px-6 py-3.5 font-bold text-white text-sm transition-all shadow-lg shadow-purple-500/20">
+                    Fill in the form <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                  <a href={`mailto:${SALES_EMAIL}`}
+                    onClick={() => trackEvent("pricing_cta_clicked", { button: "email_sales" })}
+                    className="inline-flex items-center gap-2 rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-6 py-3.5 font-bold text-gray-800 dark:text-gray-200 text-sm hover:border-purple-500/50 transition-all">
+                    <Mail className="h-4 w-4" aria-hidden="true" /> Email sales directly
+                  </a>
+                </div>
+                <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">{SALES_EMAIL}</p>
               </div>
             </FadeIn>
           </div>
         </section>
 
-        {/* ── FAQ ── */}
-        <section id="faq" aria-labelledby="faq-heading" className="py-24 bg-gray-50 dark:bg-gray-900/50">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6">
-            <FadeIn className="text-center mb-12">
-              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">FAQ</p>
-              <h2 id="faq-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Common questions</h2>
-            </FadeIn>
-            <div className="space-y-4">
-              {FAQ_ITEMS.map((item, i) => (
-                <FadeIn key={item.q} delay={i * 0.05}>
-                  <details className="group rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all">
-                    <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-bold text-gray-900 dark:text-white text-sm list-none select-none">
-                      {item.q}
-                      <span className="shrink-0 text-purple-500 text-lg leading-none group-open:rotate-45 transition-transform duration-200" aria-hidden="true">+</span>
-                    </summary>
-                    <p className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.a}</p>
-                  </details>
-                </FadeIn>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── CONTACT ── */}
-        <section id="contact" ref={contactRef} data-section="contact" aria-labelledby="contact-heading" className="py-24 bg-white dark:bg-gray-950">
+        <section id="contact" ref={contactRef} data-section="contact" aria-labelledby="contact-heading" className="scroll-mt-20 py-24 bg-white dark:bg-gray-950">
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <FadeIn className="text-center mb-12">
               <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Get in Touch</p>
@@ -912,7 +910,49 @@ export default function LandingPage() {
             </FadeIn>
           </div>
         </section>
+        {/* ── FAQ ── */}
+        <section id="faq" aria-labelledby="faq-heading" className="py-24 bg-gray-50 dark:bg-gray-900/50">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-12">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">FAQ</p>
+              <h2 id="faq-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Common questions</h2>
+            </FadeIn>
+            <div className="space-y-4">
+              {FAQ_ITEMS.map((item, i) => (
+                <FadeIn key={item.q} delay={i * 0.05}>
+                  <details className="group rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all">
+                    <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-bold text-gray-900 dark:text-white text-sm list-none select-none">
+                      {item.q}
+                      <span className="shrink-0 text-purple-500 text-lg leading-none group-open:rotate-45 transition-transform duration-200" aria-hidden="true">+</span>
+                    </summary>
+                    <p className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.a}</p>
+                  </details>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
       </main>
+
+      {/* ── FLOATING CONTACT BUBBLE (after first section) ── */}
+      <AnimatePresence>
+        {showBubble && (
+          <motion.a
+            key="contact-bubble"
+            href="#contact"
+            onClick={() => trackEvent("contact_bubble_clicked")}
+            aria-label="Contact us"
+            initial={{ opacity: 0, y: 16, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.9 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-violet-600 px-5 py-3.5 text-sm font-bold text-white shadow-2xl shadow-purple-500/40 hover:scale-105 transition-transform"
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden="true" /> Contact us
+          </motion.a>
+        )}
+      </AnimatePresence>
 
       <CookieBanner />
 
