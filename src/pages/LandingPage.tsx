@@ -2,10 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import {
-  ShoppingBag, Zap, Check, ArrowRight, Menu, X, Sun, Moon,
-  Mail, ChevronRight, Star,
-  Globe, Paintbrush, TrendingUp, Headphones, Search, Database,
-  FileText, Megaphone, Settings2, Building2, MapPin, Users, Code2,
+  ArrowRight, Menu, X, Sun, Moon, Mail, ChevronRight, Star,
+  Globe, Users, Building2, GraduationCap, Boxes, ChefHat, ShoppingBag,
+  Cake, Bot, Sparkles, Workflow, Database, MapPin, Check, Zap,
   type LucideIcon
 } from "lucide-react";
 import { trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
@@ -13,6 +12,7 @@ import CookieBanner from "../components/CookieBanner";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
 const API_URL = import.meta.env.VITE_API_URL || "https://api-marketplace.pixelndpitch.com";
+const SALES_EMAIL = "sales@pixelndpitch.com";
 
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
@@ -30,31 +30,99 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-const EXCLUSIVE_TIERS: { tier: number; name: string; Icon: LucideIcon; best: string; features: string[] }[] = [
-  { tier: 1, name: "Static Site", Icon: FileText, best: "Landing pages, portfolios, docs", features: ["Up to 5 pages", "Responsive design", "Cloudflare CDN", "Custom domain + SSL"] },
-  { tier: 2, name: "Marketing Site", Icon: Megaphone, best: "Startups, SaaS, product launches", features: ["Up to 10 pages", "Animations & CMS", "Contact forms", "SEO fundamentals"] },
-  { tier: 3, name: "Web Application", Icon: Settings2, best: "SaaS dashboards, portals", features: ["Auth (JWT/OAuth)", "REST/GraphQL API", "AWS database", "Admin panel + RBAC"] },
-  { tier: 4, name: "E-Commerce Platform", Icon: ShoppingBag, best: "D2C brands, online stores", features: ["Product catalog + variants", "Cart, wishlist", "Razorpay / Stripe / ShipRocket", "Order & inventory management"] },
-  { tier: 5, name: "Enterprise Platform", Icon: Building2, best: "Large-scale, multi-tenant", features: ["Custom architecture", "Microservices / monorepo", "Full AWS stack", "SLA & dedicated support"] },
+const SERVICES: { Icon: LucideIcon; title: string; desc: string; features: string[] }[] = [
+  {
+    Icon: Globe,
+    title: "Websites & Web Apps",
+    desc: "Fast, search-friendly websites and web applications built on modern frameworks and designed to convert visitors into customers.",
+    features: ["Business and portfolio websites", "Web apps and client portals", "SEO and Core Web Vitals", "AI chat and lead capture"],
+  },
+  {
+    Icon: Database,
+    title: "Customised CRM",
+    desc: "A CRM shaped around how your team sells, follows up and supports customers, rather than a generic template.",
+    features: ["Lead and pipeline tracking", "Customer history and notes", "AI lead scoring and follow-up reminders", "Email, WhatsApp and payment integrations"],
+  },
+  {
+    Icon: Building2,
+    title: "ERP for Businesses",
+    desc: "Finance, sales, inventory, HR and operations connected in one system, with reporting your management team can act on.",
+    features: ["Accounting and GST-ready invoicing", "HR and payroll workflows", "Procurement and operations", "Role-based management dashboards"],
+  },
+  {
+    Icon: GraduationCap,
+    title: "ERP for Colleges",
+    desc: "Admissions, student records, fees, attendance and examinations managed through one secure campus platform.",
+    features: ["Admissions and student records", "Fee collection and receipts", "Attendance and timetables", "Student and parent portals"],
+  },
+  {
+    Icon: Boxes,
+    title: "Inventory Management",
+    desc: "Live stock visibility across warehouses, shops and kitchens, with alerts before you run out or over-order.",
+    features: ["Multi-location stock tracking", "Barcode and SKU management", "Low-stock and expiry alerts", "AI demand forecasting"],
+  },
+  {
+    Icon: ShoppingBag,
+    title: "Ordering Platforms",
+    desc: "Online ordering, digital menus and kitchen workflows for restaurants, cafés, bakeries and small food brands.",
+    features: ["Digital menu and online ordering", "Custom cake and pre-order requests", "UPI, card and cash on delivery", "Kitchen display and order tracking"],
+  },
 ];
 
-const ADDONS = [
-  { icon: <Paintbrush className="h-5 w-5" />, name: "UI/UX Design (Figma)", desc: "Wireframes & high-fidelity mockups before development" },
-  { icon: <Search className="h-5 w-5" />, name: "SEO Optimisation", desc: "On-page SEO, sitemap, schema markup, Core Web Vitals" },
-  { icon: <Database className="h-5 w-5" />, name: "CMS Integration", desc: "Contentful / Sanity / Strapi for non-dev content editing" },
-  { icon: <ShoppingBag className="h-5 w-5" />, name: "Payment Gateway", desc: "Razorpay / Stripe with webhook handling and refund flows" },
-  { icon: <Globe className="h-5 w-5" />, name: "AWS Infrastructure", desc: "VPC, RDS, S3, IAM, CloudWatch, auto-scaling setup" },
-  { icon: <TrendingUp className="h-5 w-5" />, name: "Performance Audit", desc: "Lighthouse, bundle optimisation, CDN cache tuning" },
-  { icon: <Headphones className="h-5 w-5" />, name: "Maintenance & Support", desc: "Monthly bug fixes, dependency updates, uptime monitoring" },
+const INDUSTRIES: { Icon: LucideIcon; title: string; desc: string }[] = [
+  { Icon: Building2, title: "Businesses & Enterprises", desc: "Operations, sales and finance teams that need one connected system instead of spreadsheets." },
+  { Icon: GraduationCap, title: "Colleges & Universities", desc: "Institutions that want digital admissions, fee management and a single source of student data." },
+  { Icon: ChefHat, title: "Restaurants & Cafés", desc: "Table, takeaway and delivery orders with menus that update in real time." },
+  { Icon: Cake, title: "Bakeries & Small Food Brands", desc: "Simple online ordering, custom orders and stock tracking built for small teams." },
+];
+
+const AI_CAPABILITIES: string[] = [
+  "AI assistants and chatbots trained on your own business data",
+  "Workflow automation across your CRM, ERP and inventory",
+  "Invoice and document extraction that removes manual data entry",
+  "Demand forecasting and analytics dashboards",
+  "AI-assisted SEO content and search visibility for your website",
+  "Secure, private deployments that keep your data under your control",
 ];
 
 const PROCESS_STEPS = [
-  { n: "01", title: "Discovery", desc: "Free 30-min call to understand your goals and requirements" },
-  { n: "02", title: "Proposal", desc: "Detailed scope, milestones, timeline & fixed-price quote in 72h" },
-  { n: "03", title: "Design", desc: "Figma wireframes & high-fidelity mockups for your approval" },
-  { n: "04", title: "Build", desc: "Iterative development with weekly updates & staging preview" },
-  { n: "05", title: "QA & Launch", desc: "Cross-browser testing, performance audit, go-live support" },
-  { n: "06", title: "Handoff", desc: "Documentation, training & optional ongoing maintenance" },
+  { n: "01", title: "Discovery", desc: "A free discovery call to understand your processes, goals and budget." },
+  { n: "02", title: "Proposal", desc: "Clear scope, milestones and a fixed-price quote from our team." },
+  { n: "03", title: "Design", desc: "Wireframes and mockups for your approval before any development starts." },
+  { n: "04", title: "Build", desc: "Agile sprints with regular demos and a staging environment to review." },
+  { n: "05", title: "Test & Launch", desc: "Security, performance and cross-device testing, followed by go-live support." },
+  { n: "06", title: "Support", desc: "Training, documentation and optional maintenance, updates and AI improvements." },
+];
+
+const FAQ_ITEMS: { q: string; a: string }[] = [
+  {
+    q: "What services does Pixel & Pitch offer?",
+    a: "Pixel & Pitch is a boutique IT and AI services firm. We build websites and web applications, customised CRM systems, ERP systems for businesses and colleges, inventory management systems, and online ordering platforms for restaurants, cafés and bakeries.",
+  },
+  {
+    q: "How do you use AI in your services?",
+    a: "We build AI into the systems we deliver: AI assistants and chatbots trained on your business data, workflow automation, invoice and document extraction, demand forecasting, lead scoring and AI-assisted SEO for websites.",
+  },
+  {
+    q: "Do you build custom CRM and ERP systems for small businesses?",
+    a: "Yes. We design CRM and ERP systems around how your business actually runs, starting with the features you need and expanding as you grow.",
+  },
+  {
+    q: "Can you build an ordering platform for my restaurant or bakery?",
+    a: "Yes. We build online ordering platforms with digital menus, custom and pre-order requests, UPI and card payments, and kitchen order tracking for restaurants, cafés, bakeries and small food brands.",
+  },
+  {
+    q: "Do you build management systems for colleges?",
+    a: "Yes. We build ERP platforms for colleges and universities covering admissions, student records, fee collection, attendance, timetables and student and parent portals.",
+  },
+  {
+    q: "How much does a project cost?",
+    a: `Pricing depends on scope, so we do not publish fixed prices. Contact our team at ${SALES_EMAIL} or use the contact form on this page. After a discovery call we provide a tailored, fixed-price proposal.`,
+  },
+  {
+    q: "Do you provide support after launch?",
+    a: "Yes. We offer training, documentation and optional maintenance plans that cover bug fixes, security and dependency updates, and AI improvements.",
+  },
 ];
 
 type TimeSlot = "midnight" | "earlyMorning" | "morning" | "afternoon" | "evening" | "night";
@@ -93,133 +161,67 @@ function getVisitCount(): number {
 const TAGLINES: Record<TimeSlot, string[]> & { weather: Record<WeatherKey, string[]> } = {
   midnight: [
     "Midnight and still building? Legends work these hours.",
-    "The world's asleep. You're three features ahead.",
-    "3am ideas are the ones that change industries.",
-    "Most dream it. You're coding it at midnight.",
-    "The grind doesn't sleep. Neither do you.",
-    "While others Netflix, you build empires.",
-    "Your competition is asleep. You're not.",
-    "Late night, big vision. You're exactly where you need to be.",
-    "Startup hours: whenever inspiration strikes.",
-    "The best founders work when nobody's watching.",
-    "Dark outside. Bright future.",
-    "No alarm needed when you love what you build.",
-    "Midnight oil burns the brightest.",
-    "Some call it insomnia. We call it ambition.",
-    "The night shift is where businesses are born.",
+    "While the world sleeps, AI is still working for you.",
+    "3am ideas are the ones that change how businesses run.",
+    "The best operations teams never clock out.",
+    "Dark outside. Smarter systems inside.",
   ],
   earlyMorning: [
-    "Up before the sun? You're already ahead of most.",
-    "5am and already here — that's founder energy.",
-    "The city's still asleep, but you're already building.",
-    "Early mornings are the entrepreneur's unfair advantage.",
-    "Coffee in hand. Dreams on the line. Let's build.",
-    "You woke up early. Your competition didn't.",
-    "The alarm hasn't gone off for most. You didn't need one.",
-    "Sunrise is your starting gun.",
-    "While the world hits snooze, you're hitting launch.",
+    "Up before the sun? Your systems can be too.",
+    "Early mornings are the perfect time to automate the routine.",
+    "Coffee in hand. Dashboards ready. Let's build.",
+    "Let AI do yesterday's data entry before your first meeting.",
     "Dawn belongs to builders.",
-    "Most people sleep through their breakthrough moment.",
-    "It's early. You're early. That's the whole point.",
-    "The morning belongs to those who claimed it.",
-    "First light. First move. You're already winning.",
-    "Early bird? No — early founder.",
   ],
   morning: [
-    "Good morning, founder. Today's the day you launch.",
-    "The hustle starts before the coffee kicks in.",
-    "Morning energy hits different when you're building something real.",
-    "The best time to start was yesterday. Second best? Right now.",
-    "Today's to-do list: build something people love.",
-    "A new day, a new chance to ship something great.",
-    "Your store won't build itself. But we're pretty close.",
-    "Rise and build.",
-    "The market opens. So does your opportunity.",
-    "Fresh morning, fresh start, fresh store.",
-    "This morning, someone will discover your brand. Make sure it's live.",
-    "Your brand has a story. Let's give it a home.",
-    "Good things are built in the morning. Great ones too.",
-    "Morning: when side projects become the main event.",
-    "The world opens for business. So should you.",
+    "Good morning. Let's make today's workflow smarter.",
+    "Your customers are online. Is your business ready for them?",
+    "Rise and build something your team will love using.",
+    "Fresh morning, fresh systems, fewer spreadsheets.",
+    "Every great business runs on great software.",
   ],
   afternoon: [
-    "Afternoon slump? Not for builders.",
-    "Lunch break idea? Some of the best startups started here.",
-    "The grind doesn't take a siesta.",
-    "Halfway through the day. Halfway to launch?",
-    "While others nap, you ship.",
-    "Productivity peak hour. Use it.",
-    "2pm fire. Build something worth staying for.",
-    "Post-lunch momentum — the secret weapon of founders.",
-    "Your competition is in a meeting. You're building.",
-    "The afternoon is underrated. So is your idea — until it isn't.",
-    "Still going strong. That's the founder mindset.",
-    "Great ideas don't wait for the right time.",
-    "Every afternoon is a chance to inch closer to launch.",
-    "The clock's ticking. In a good way.",
-    "Afternoon hustle. No one talks about it. Everyone needs it.",
+    "Afternoon slump? Let automation pick up the slack.",
+    "Halfway through the day. Halfway to a smarter business.",
+    "Your competition is in a meeting. You're upgrading.",
+    "Productivity peak hour. Let's put AI to work.",
+    "Great systems don't wait for the right time.",
   ],
   evening: [
-    "The 9-to-5 is clocking out. You're just getting started.",
-    "Side hustle hours. The best hours.",
-    "After the day job comes the real work.",
-    "Sunset doesn't mean stop — it means pivot.",
-    "Golden hour for golden ideas.",
-    "Office closed. Startup open.",
-    "When the day job ends, the dream job begins.",
-    "Evening: when side projects become the main character.",
-    "You finished your day. Now start your destiny.",
-    "The best businesses were built in evenings like this.",
-    "Dinner can wait. Your brand can't.",
-    "Prime time isn't on TV — it's in your browser right now.",
-    "Evening builders are tomorrow's disruptors.",
-    "Clocking out? Or clocking in — to your own thing?",
-    "The best shift starts now.",
+    "Clocking out? Your business can keep running smarter.",
+    "Evening is when the best ideas for your business show up.",
+    "Dinner can wait. Your inventory and orders can't.",
+    "Golden hour for smarter operations.",
+    "The best systems are built one thoughtful step at a time.",
   ],
   night: [
-    "True entrepreneurs are always night owls.",
-    "Prime thinking hours for the ambitious mind.",
-    "The best ideas come after dark.",
-    "Night mode activated. Build mode: on.",
-    "Burning the midnight oil never went out of style.",
-    "The world slows down. You speed up.",
-    "Stars are out. Ideas are flowing.",
-    "Night is just daytime for founders.",
-    "Your best work happens when the world goes quiet.",
+    "Night mode activated. Smarter business mode: on.",
+    "The best ideas come after dark. So do the best systems.",
+    "Your competition stopped hours ago. Your systems can keep going.",
+    "After hours is where operations get automated.",
     "Silence + ambition = something great.",
-    "It's late. Your competition stopped hours ago.",
-    "Night shift at your own company. All vision, no overtime.",
-    "The internet never sleeps. Neither does opportunity.",
-    "Some call it late. Founders call it prime time.",
-    "After hours is where before-hours winners are made.",
   ],
   weather: {
     sunny: [
       "Bright day, brighter future. Let's build.",
-      "The sun's out. Your ambition should be too.",
       "Clear skies, clear vision. Today's the day.",
-      "Sunshine and startup energy — unstoppable combo.",
-      "Good weather is wasted on people who aren't building something.",
+      "Sunshine and smart systems — unstoppable combo.",
     ],
     rainy: [
-      "Even the rain can't stop a true builder.",
-      "Perfect weather to stay in and launch something.",
+      "Rainy day? Perfect time to digitise your operations.",
       "Rain outside, fire inside. Let's go.",
       "Rainy days are made for big ideas.",
-      "The best stores were built on rainy days just like this.",
     ],
     cloudy: [
       "Grey skies, bright future.",
       "Clouds can't dim your vision.",
-      "Overcast outside. Crystal clear inside.",
     ],
     stormy: [
       "Storms don't stop builders. They inspire them.",
-      "Thunder and lightning: nature's way of saying launch bold.",
-      "The best ideas survive every storm.",
+      "The best systems survive every storm.",
     ],
     snowy: [
-      "Snow day? Perfect time to build your empire.",
+      "Snow day? Perfect time to build your next system.",
       "Cold outside, warm ambition inside.",
     ],
     foggy: [
@@ -283,8 +285,9 @@ export default function LandingPage() {
     setTimeout(() => setShowIntro(false), 900);
   }, []);
 
-  const productsRef = useRef<HTMLElement>(null);
-  const exclusiveRef = useRef<HTMLElement>(null);
+  const servicesRef = useRef<HTMLElement>(null);
+  const aiRef = useRef<HTMLElement>(null);
+  const industriesRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -367,28 +370,6 @@ export default function LandingPage() {
     };
   }, [showIntro, dismissIntro]);
 
-  // FAQ JSON-LD schema
-  useEffect(() => {
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "What is the Pixel & Pitch Marketplace?", "acceptedAnswer": { "@type": "Answer", "text": "The Pixel & Pitch Marketplace is a self-serve platform where Indian brands can launch their own product catalog online in minutes — no code required." } },
-        { "@type": "Question", "name": "How much does it cost to list my brand on the Marketplace?", "acceptedAnswer": { "@type": "Answer", "text": "The Marketplace plan starts at ₹499 per month. A Pro plan at ₹799/month adds payment gateway setup." } },
-        { "@type": "Question", "name": "Do I need a developer to set up my store?", "acceptedAnswer": { "@type": "Answer", "text": "No. You can set up your entire catalog — logo, products, theme, and branding — yourself through our onboarding flow in under 15 minutes." } },
-        { "@type": "Question", "name": "Can I accept payments through my catalog?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Pro plan includes Razorpay payment gateway integration, supporting UPI, cards, and net banking." } },
-        { "@type": "Question", "name": "Is my catalog visible on Google?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Each brand's catalog page is publicly accessible and indexed by search engines, giving your brand organic visibility." } },
-        { "@type": "Question", "name": "What is the difference between the Marketplace plan and an Exclusive website?", "acceptedAnswer": { "@type": "Answer", "text": "The Marketplace plan gives you a catalog page hosted on marketplace.pixelndpitch.com. An Exclusive website is a fully custom-built standalone website on your own domain." } },
-      ],
-    };
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.id = "faq-schema";
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
-    return () => { document.getElementById("faq-schema")?.remove(); };
-  }, []);
-
   // Analytics: section viewed tracking via IntersectionObserver
   useEffect(() => {
     const observed = new Set<string>();
@@ -406,7 +387,7 @@ export default function LandingPage() {
       },
       { threshold: 0.5 }
     );
-    [productsRef, exclusiveRef, contactRef].forEach(ref => {
+    [servicesRef, aiRef, industriesRef, contactRef].forEach(ref => {
       if (ref.current) observer.observe(ref.current);
     });
     return () => observer.disconnect();
@@ -452,15 +433,17 @@ export default function LandingPage() {
       setFormData({ name: "", email: "", phone: "", product_interest: "", message: "" });
       setFormTouched(false);
     } catch {
-      toast.error("Something went wrong. Please email us at admin@pixelndpitch.com");
+      toast.error(`Something went wrong. Please email us at ${SALES_EMAIL}`);
     } finally {
       setSubmitting(false);
     }
   };
 
   const navLinks = [
-    { label: "Products", href: "#products" },
-    { label: "Exclusive", href: "#exclusive" },
+    { label: "Services", href: "#services" },
+    { label: "AI Solutions", href: "#ai" },
+    { label: "Industries", href: "#industries" },
+    { label: "FAQ", href: "#faq" },
     { label: "Contact", href: "#contact" },
   ];
 
@@ -535,10 +518,10 @@ export default function LandingPage() {
       {/* ── NAVBAR ── */}
       <header className="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 flex h-16 items-center justify-between">
-          <a href="/" className="flex items-center gap-2.5">
+          <a href="/" className="flex items-center gap-2.5" aria-label="Pixel & Pitch home">
             <img src={LOGO} alt="Pixel & Pitch" className="h-8 w-auto" />
           </a>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav aria-label="Main" className="hidden md:flex items-center gap-8">
             {navLinks.map(l => (
               <a key={l.href} href={l.href} className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                 {l.label}
@@ -546,14 +529,15 @@ export default function LandingPage() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <button onClick={toggleTheme} aria-label="Toggle colour theme" className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
               {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer"
+            <a href="#contact"
+              onClick={() => trackEvent("nav_cta_clicked", { button: "contact_sales" })}
               className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 px-4 py-2 text-sm font-bold text-white transition-all shadow-lg shadow-purple-500/25">
-              Launch Store <ArrowRight className="h-3.5 w-3.5" />
+              Contact Sales <ArrowRight className="h-3.5 w-3.5" />
             </a>
-            <button className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" onClick={() => setMobileOpen(!mobileOpen)}>
+            <button className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Open menu" onClick={() => setMobileOpen(!mobileOpen)}>
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -564,425 +548,371 @@ export default function LandingPage() {
               <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)}
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 py-2">{l.label}</a>
             ))}
-            <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer"
+            <a href="#contact" onClick={() => setMobileOpen(false)}
               className="block rounded-xl bg-purple-600 px-4 py-3 text-sm font-bold text-white text-center">
-              Launch Your Store →
+              Contact Sales →
             </a>
           </div>
         )}
       </header>
 
-      {/* ── HERO ── */}
-      <section className="relative overflow-hidden pt-20 pb-32">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/50 via-gray-950 to-gray-950 dark:from-purple-950/60 dark:via-gray-950 dark:to-gray-950" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(147,51,234,0.15),transparent_60%)]" />
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-          style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
+      <main>
+        {/* ── HERO ── */}
+        <section aria-labelledby="hero-heading" className="relative overflow-hidden pt-20 pb-32">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-950/50 via-gray-950 to-gray-950 dark:from-purple-950/60 dark:via-gray-950 dark:to-gray-950" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(147,51,234,0.15),transparent_60%)]" />
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+            style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
 
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-300 mb-8">
-              <Star className="h-3 w-3" /> Built in India with 💜 · For the world
-            </div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="mb-8">
-            <p className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-5 min-h-[3.5rem]">
-              <span className="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
-                {displayedTagline || "\u00A0"}
-              </span>
-              {displayedTagline.length < tagline.length && (
-                <span className="animate-pulse text-purple-400">|</span>
-              )}
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white/80 tracking-tight">
-              Your store, live in minutes.
-            </h1>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-base sm:text-lg text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed"
-          >
-            Launch your product catalog, accept payments, and start selling —
-            no code, no hassle.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer"
-              onClick={() => trackEvent("hero_cta_clicked", { button: "launch_store" })}
-              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-600 px-8 py-4 font-bold text-white text-base shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] transition-all">
-              <Zap className="h-4 w-4" /> Launch Your Store <ArrowRight className="h-4 w-4" />
-            </a>
-            <a href="#contact"
-              onClick={() => trackEvent("hero_cta_clicked", { button: "talk_to_us" })}
-              className="inline-flex items-center gap-2 rounded-2xl border border-gray-700 bg-gray-900/50 px-8 py-4 font-bold text-gray-200 text-base hover:border-purple-500/50 hover:bg-gray-800/50 transition-all">
-              Talk to Us <ChevronRight className="h-4 w-4" />
-            </a>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── PRODUCTS ── */}
-      <section id="products" ref={productsRef} data-section="products" className="py-24 bg-gray-50 dark:bg-gray-900/50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <FadeIn className="text-center mb-16">
-            <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Our Products</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">
-              Two ways to go online
-            </h2>
-            <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
-              Pick the product that fits your stage and ambition.
-            </p>
-          </FadeIn>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Marketplace Card */}
-            <FadeIn delay={0.1}>
-              <div onClick={() => window.open("https://marketplace.pixelndpitch.com", "_blank")} className="relative h-full rounded-3xl border border-purple-500/30 bg-white dark:bg-gray-900 p-8 shadow-xl shadow-purple-500/5 flex flex-col overflow-hidden cursor-pointer transition-transform hover:-translate-y-1">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-purple-500/10 to-transparent rounded-3xl" />
-                <div className="relative">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 dark:bg-purple-900/40 px-3 py-1 text-xs font-bold text-purple-700 dark:text-purple-300 mb-5">
-                    <ShoppingBag className="h-3.5 w-3.5" /> Self-Serve · Live in Minutes
-                  </div>
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Marketplace</h3>
-                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                    Launch your product catalog in a few clicks. No coding required. Built for early-stage entrepreneurs who want a professional online presence without the hefty price tag.
-                  </p>
-                  <ul className="space-y-2.5 mb-8">
-                    {[
-                      "Drag-and-drop product catalog",
-                      "10 brand color palettes",
-                      "Hero banner with image & video",
-                      "Razorpay & UPI payment integration",
-                      "ShipRocket delivery management",
-                      "Custom domain ready",
-                    ].map(f => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300">
-                        <Check className="h-4 w-4 text-purple-500 shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Pricing */}
-                  <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5 mb-7">
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Monthly subscription</p>
-                    <div className="space-y-2.5">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-bold text-gray-900 dark:text-white text-sm">Basic</p>
-                          <p className="text-xs text-gray-400">No payment gateway</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-black text-gray-900 dark:text-white">₹499</p>
-                          <p className="text-[10px] text-gray-400 font-medium">per month</p>
-                        </div>
-                      </div>
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-2.5 flex justify-between items-center">
-                        <div>
-                          <p className="font-bold text-purple-600 dark:text-purple-400 text-sm">Pro</p>
-                          <p className="text-xs text-gray-400">Gateway setup done by us</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-black text-purple-600 dark:text-purple-400">₹799</p>
-                          <p className="text-[10px] text-gray-400 font-medium">per month</p>
-                        </div>
-                      </div>
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-2.5 flex justify-between items-center">
-                        <div>
-                          <p className="font-bold text-gray-900 dark:text-white text-sm">+ Analytics Dashboard</p>
-                          <p className="text-xs text-gray-400">Visitor data, product views, funnel</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-black text-gray-500 dark:text-gray-400">+₹99</p>
-                          <p className="text-[10px] text-gray-400 font-medium">per month</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-purple-600 hover:bg-purple-500 px-6 py-3.5 font-bold text-white text-sm transition-all shadow-lg shadow-purple-500/20">
-                    Start Building <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
+          <div className="relative mx-auto max-w-5xl px-4 sm:px-6 text-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+              <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-300 mb-8">
+                <Star className="h-3 w-3" aria-hidden="true" /> Boutique AI & IT services · Built in India
               </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="mb-8">
+              <p className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-5 min-h-[3.5rem]">
+                <span className="bg-gradient-to-r from-purple-400 to-violet-300 bg-clip-text text-transparent">
+                  {displayedTagline || " "}
+                </span>
+                {displayedTagline.length < tagline.length && (
+                  <span className="animate-pulse text-purple-400">|</span>
+                )}
+              </p>
+              <h1 id="hero-heading" className="text-2xl sm:text-3xl font-bold text-white/80 tracking-tight">
+                AI-powered websites, CRMs and ERPs for growing businesses
+              </h1>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            >
+              Pixel &amp; Pitch is a boutique team that builds websites, custom CRMs, ERPs, inventory
+              systems and ordering platforms for businesses, colleges, restaurants and bakeries, with
+              AI built into every layer.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <a href="#services"
+                onClick={() => trackEvent("hero_cta_clicked", { button: "explore_services" })}
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-600 px-8 py-4 font-bold text-white text-base shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] transition-all">
+                <Zap className="h-4 w-4" aria-hidden="true" /> Explore Our Services <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <a href="#contact"
+                onClick={() => trackEvent("hero_cta_clicked", { button: "talk_to_us" })}
+                className="inline-flex items-center gap-2 rounded-2xl border border-gray-700 bg-gray-900/50 px-8 py-4 font-bold text-gray-200 text-base hover:border-purple-500/50 hover:bg-gray-800/50 transition-all">
+                Talk to Our Team <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── SERVICES ── */}
+        <section id="services" ref={servicesRef} data-section="services" aria-labelledby="services-heading" className="py-24 bg-gray-50 dark:bg-gray-900/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-16">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Our Services</p>
+              <h2 id="services-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">
+                Software and websites, built around your business
+              </h2>
+              <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+                From a professional website to a full ERP, we design and build the systems your team relies on every day.
+              </p>
             </FadeIn>
 
-            {/* Exclusive Card */}
-            <FadeIn delay={0.2}>
-              <div onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })} className="relative h-full rounded-3xl border border-emerald-500/30 bg-white dark:bg-gray-900 p-8 shadow-xl shadow-emerald-500/5 flex flex-col overflow-hidden cursor-pointer transition-transform hover:-translate-y-1">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-3xl" />
-                <div className="relative flex-1 flex flex-col">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-5">
-                    <Zap className="h-3.5 w-3.5" /> Custom Built · Tailored to You
-                  </div>
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Exclusive</h3>
-                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                    Custom digital solutions built from scratch. Five engagement tiers — from lightweight landing pages to full enterprise platforms. We handle design, development, and deployment.
-                  </p>
-                  <ul className="space-y-2.5 mb-8">
-                    {[
-                      "Static & marketing websites",
-                      "Full-stack web applications",
-                      "E-commerce platforms",
-                      "Enterprise & multi-tenant systems",
-                      "Figma design to pixel-perfect code",
-                      "AWS + Vercel + Cloudflare stack",
-                    ].map(f => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5 mb-7 flex-1">
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Service tiers</p>
-                    <div className="space-y-2">
-                      {["Static Site", "Marketing Site", "Web Application", "E-Commerce Platform", "Enterprise Platform"].map((t, i) => (
-                        <div key={t} className="flex items-center gap-3 text-sm">
-                          <span className="flex-shrink-0 h-5 w-5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-black flex items-center justify-center">{i + 1}</span>
-                          <span className="text-gray-700 dark:text-gray-300 font-medium">{t}</span>
-                        </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {SERVICES.map((s, i) => (
+                <FadeIn key={s.title} delay={i * 0.06} className="h-full">
+                  <article className="h-full rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7 flex flex-col">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 mb-5">
+                      <s.Icon className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">{s.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-5">{s.desc}</p>
+                    <ul className="space-y-2 mt-auto">
+                      {s.features.map(f => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                          <Check className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" aria-hidden="true" /> {f}
+                        </li>
                       ))}
-                    </div>
-                    <p className="mt-4 text-xs text-gray-400 italic">Contact us for a quote — all projects are scoped individually.</p>
-                  </div>
-                  <a href="#contact"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 px-6 py-3.5 font-bold text-white text-sm transition-all shadow-lg shadow-emerald-500/20">
-                    Get a Quote <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </div>
-            </FadeIn>
+                    </ul>
+                  </article>
+                </FadeIn>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── EXCLUSIVE DEEP-DIVE ── */}
-      <section id="exclusive" ref={exclusiveRef} data-section="exclusive" className="py-24 bg-white dark:bg-gray-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <FadeIn className="text-center mb-16">
-            <p className="text-sm font-bold uppercase tracking-widest text-emerald-500 mb-3">Exclusive</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Custom web solutions,<br />built for you</h2>
-            <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
-              Five service tiers — from a simple landing page to a full enterprise platform. All projects include Figma design, modern tech stack, and a dedicated point of contact.
-            </p>
-          </FadeIn>
-
-          {/* Tiers */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-20">
-            {EXCLUSIVE_TIERS.map((t, i) => (
-              <FadeIn key={t.tier} delay={i * 0.08}>
-                <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-5 flex flex-col">
-                  <div className="mb-3"><t.Icon className="h-7 w-7 text-purple-500" /></div>
-                  <div className="inline-block rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-[10px] font-black text-gray-500 dark:text-gray-400 mb-2 w-fit">TIER {t.tier}</div>
-                  <h4 className="font-black text-gray-900 dark:text-white text-base mb-1">{t.name}</h4>
-                  <p className="text-xs text-gray-400 mb-4 leading-relaxed">{t.best}</p>
-                  <ul className="space-y-1.5 flex-1">
-                    {t.features.map(f => (
-                      <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                        <Check className="h-3 w-3 text-emerald-500 mt-0.5 shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 text-[10px] font-semibold text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-3">Contact for pricing →</p>
-                </div>
+        {/* ── AI SOLUTIONS ── */}
+        <section id="ai" ref={aiRef} data-section="ai" aria-labelledby="ai-heading" className="py-24 bg-white dark:bg-gray-950">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="grid lg:grid-cols-2 gap-14 items-center">
+              <FadeIn>
+                <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">AI Solutions</p>
+                <h2 id="ai-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white mb-5">
+                  AI that works inside your business
+                </h2>
+                <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed mb-8">
+                  We do not bolt on AI for show. We identify the repetitive, data-heavy parts of your
+                  operations and build AI into your website, CRM, ERP and inventory systems where it saves
+                  time and improves decisions.
+                </p>
+                <a href="#contact"
+                  onClick={() => trackEvent("ai_cta_clicked")}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-purple-600 hover:bg-purple-500 px-6 py-3.5 font-bold text-white text-sm transition-all shadow-lg shadow-purple-500/20">
+                  Discuss an AI project <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
               </FadeIn>
-            ))}
-          </div>
 
-          {/* Add-ons */}
-          <FadeIn>
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white text-center mb-8">Add-On Services</h3>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-20">
-              {ADDONS.map((a, i) => (
-                <FadeIn key={a.name} delay={i * 0.05}>
-                  <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-5">
-                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mb-3">
-                      {a.icon}
-                    </div>
-                    <p className="font-bold text-gray-900 dark:text-white text-sm mb-1">{a.name}</p>
-                    <p className="text-xs text-gray-400 leading-relaxed">{a.desc}</p>
+              <FadeIn delay={0.15}>
+                <ul className="grid gap-3">
+                  {AI_CAPABILITIES.map((c, i) => {
+                    const Icon = [Bot, Workflow, Sparkles, Database, Globe, Check][i] ?? Check;
+                    return (
+                      <li key={c} className="flex items-start gap-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-5">
+                        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                          <Icon className="h-4 w-4" aria-hidden="true" />
+                        </span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 leading-relaxed pt-1.5">{c}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </FadeIn>
+            </div>
+          </div>
+        </section>
+
+        {/* ── INDUSTRIES ── */}
+        <section id="industries" ref={industriesRef} data-section="industries" aria-labelledby="industries-heading" className="py-24 bg-gray-50 dark:bg-gray-900/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-14">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Industries</p>
+              <h2 id="industries-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">
+                Who we build for
+              </h2>
+            </FadeIn>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {INDUSTRIES.map((item, i) => (
+                <FadeIn key={item.title} delay={i * 0.08} className="h-full">
+                  <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7">
+                    <item.Icon className="h-8 w-8 text-purple-500 mb-4" aria-hidden="true" />
+                    <h3 className="font-black text-gray-900 dark:text-white text-lg mb-2">{item.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                   </div>
                 </FadeIn>
               ))}
             </div>
-          </FadeIn>
+          </div>
+        </section>
 
-          {/* Process */}
-          <FadeIn>
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white text-center mb-10">How We Work</h3>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {/* ── PROCESS ── */}
+        <section aria-labelledby="process-heading" className="py-24 bg-white dark:bg-gray-950">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-14">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">How We Work</p>
+              <h2 id="process-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">
+                From first call to go-live
+              </h2>
+            </FadeIn>
+            <ol className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
               {PROCESS_STEPS.map((s, i) => (
                 <FadeIn key={s.n} delay={i * 0.07}>
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center text-white text-xs font-black">{s.n}</div>
+                  <li className="flex gap-4 list-none">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center text-white text-xs font-black" aria-hidden="true">{s.n}</div>
                     <div>
-                      <p className="font-bold text-gray-900 dark:text-white text-sm">{s.title}</p>
-                      <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{s.desc}</p>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-sm">{s.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{s.desc}</p>
                     </div>
+                  </li>
+                </FadeIn>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* ── WHY US ── */}
+        <section aria-labelledby="why-heading" className="py-24 bg-gray-50 dark:bg-gray-900/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-14">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Why Pixel &amp; Pitch</p>
+              <h2 id="why-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">A boutique team, not a body shop</h2>
+            </FadeIn>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { Icon: Users, title: "Senior, hands-on team", desc: "The people who scope your project are the people who build it." },
+                { Icon: Sparkles, title: "AI-first engineering", desc: "AI is part of the design from day one, not an afterthought." },
+                { Icon: MapPin, title: "Built for India", desc: "Local payments such as UPI, GST-ready invoicing and Indian business workflows." },
+                { Icon: Workflow, title: "End-to-end ownership", desc: "From discovery and design to launch, support and improvements." },
+              ].map((item, i) => (
+                <FadeIn key={item.title} delay={i * 0.1} className="h-full">
+                  <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7 text-center">
+                    <div className="flex justify-center mb-4"><item.Icon className="h-8 w-8 text-purple-500" aria-hidden="true" /></div>
+                    <h3 className="font-black text-gray-900 dark:text-white text-lg mb-2">{item.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                   </div>
                 </FadeIn>
               ))}
             </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ── WHY P&P ── */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-900/50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <FadeIn className="text-center mb-14">
-            <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Why Pixel &amp; Pitch</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Built different</h2>
-          </FadeIn>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { Icon: Zap, title: "Fast Delivery", desc: "Launch in days, not months. We move fast without cutting corners." },
-              { Icon: MapPin, title: "India-First", desc: "Razorpay, UPI, ShipRocket — built for how Indian businesses operate." },
-              { Icon: Code2, title: "Modern Stack", desc: "React, Next.js, AWS, Vercel, Cloudflare — the tools top products use." },
-              { Icon: Users, title: "End-to-End", desc: "From idea to launch to support. One team, full accountability." },
-            ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.1} className="h-full">
-                <div className="h-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-7 text-center">
-                  <div className="flex justify-center mb-4"><item.Icon className="h-8 w-8 text-purple-500" /></div>
-                  <h4 className="font-black text-gray-900 dark:text-white text-lg mb-2">{item.title}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
-                </div>
-              </FadeIn>
-            ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── FAQ ── */}
-      <section className="py-24 bg-white dark:bg-gray-950">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <FadeIn className="text-center mb-12">
-            <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">FAQ</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Common questions</h2>
-          </FadeIn>
-          <div className="space-y-4">
-            {[
-              { q: "What is the Pixel & Pitch Marketplace?", a: "The Pixel & Pitch Marketplace is a self-serve platform where Indian brands can launch their own product catalog online in minutes — no code required. Customers can browse, discover, and shop directly from each brand's catalog." },
-              { q: "How much does it cost to list my brand on the Marketplace?", a: "The Marketplace plan starts at ₹499 per month. This includes your own catalog page, up to 50 products, and a shareable link. A Pro plan at ₹799/month adds payment gateway setup done by us." },
-              { q: "Do I need a developer to set up my store?", a: "No. You can set up your entire catalog — logo, products, theme, and branding — yourself through our onboarding flow. It takes under 15 minutes. We also offer fully custom website builds if you need something beyond the self-serve plan." },
-              { q: "Can I accept payments through my catalog?", a: "Yes. The Pro plan includes Razorpay payment gateway integration, supporting UPI, cards, and net banking. The Basic plan supports COD and inquiry-based orders." },
-              { q: "Is my catalog visible on Google?", a: "Yes. Each brand's catalog page is publicly accessible and indexed by search engines, giving your brand organic visibility." },
-              { q: "What is the difference between the Marketplace plan and an Exclusive website?", a: "The Marketplace plan gives you a catalog page hosted on marketplace.pixelndpitch.com. An Exclusive website is a fully custom-built, standalone website on your own domain — designed and developed by our team, with advanced features like custom checkout, CRM integrations, and more." },
-            ].map((item, i) => (
-              <FadeIn key={i} delay={i * 0.05}>
-                <details className="group rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 open:bg-white dark:open:bg-gray-900 transition-all">
-                  <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-bold text-gray-900 dark:text-white text-sm list-none select-none">
-                    {item.q}
-                    <span className="shrink-0 text-purple-500 text-lg leading-none group-open:rotate-45 transition-transform duration-200">+</span>
-                  </summary>
-                  <p className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.a}</p>
-                </details>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CONTACT ── */}
-      <section id="contact" ref={contactRef} data-section="contact" className="py-24 bg-gray-50 dark:bg-gray-900/50">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <FadeIn className="text-center mb-12">
-            <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Get in Touch</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Let's build something</h2>
-            <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg">
-              Have a project in mind? Drop us a message and we'll get back within 24 hours.
-            </p>
-          </FadeIn>
-
-          <FadeIn>
-            <div className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-8 sm:p-10 shadow-xl">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Name *</label>
-                    <input
-                      type="text" required value={formData.name}
-                      onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
-                      onFocus={() => { if (!formTouched) { trackEvent("contact_form_started"); setFormTouched(true); } }}
-                      placeholder="Your name"
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Email *</label>
-                    <input
-                      type="email" required value={formData.email}
-                      onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-                      placeholder="you@example.com"
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Phone</label>
-                    <input
-                      type="tel" value={formData.phone}
-                      onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
-                      placeholder="+91 98765 43210"
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">I'm interested in</label>
-                    <select
-                      value={formData.product_interest}
-                      onChange={e => setFormData(p => ({ ...p, product_interest: e.target.value }))}
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    >
-                      <option value="">Select...</option>
-                      <option value="marketplace">Marketplace</option>
-                      <option value="exclusive_static">Exclusive — Static Site</option>
-                      <option value="exclusive_marketing">Exclusive — Marketing Site</option>
-                      <option value="exclusive_webapp">Exclusive — Web Application</option>
-                      <option value="exclusive_ecommerce">Exclusive — E-Commerce</option>
-                      <option value="exclusive_enterprise">Exclusive — Enterprise</option>
-                      <option value="general">General Inquiry</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Message</label>
-                  <textarea
-                    rows={5} value={formData.message}
-                    onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
-                    placeholder="Tell us about your project..."
-                    className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
-                  />
-                </div>
-                <button
-                  type="submit" disabled={submitting}
-                  className="w-full rounded-2xl bg-gradient-to-r from-purple-600 to-violet-600 py-4 font-bold text-white text-base shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:scale-[1.01] transition-all disabled:opacity-60 disabled:scale-100"
-                >
-                  {submitting ? "Sending..." : "Send Message →"}
-                </button>
-              </form>
-
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="mailto:admin@pixelndpitch.com" className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">
-                  <Mail className="h-4 w-4" /> admin@pixelndpitch.com
+        {/* ── PRICING ── */}
+        <section id="pricing" aria-labelledby="pricing-heading" className="py-20 bg-white dark:bg-gray-950">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <FadeIn>
+              <div className="rounded-3xl border border-purple-500/30 bg-purple-50 dark:bg-purple-950/20 p-8 sm:p-10 text-center">
+                <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Pricing</p>
+                <h2 id="pricing-heading" className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-4">
+                  Every project is scoped to you
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-7">
+                  We do not publish fixed prices because every business, college and kitchen is different.
+                  Contact our team for a tailored, fixed-price quote.
+                </p>
+                <a href={`mailto:${SALES_EMAIL}`}
+                  onClick={() => trackEvent("pricing_cta_clicked", { button: "email_sales" })}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-purple-600 hover:bg-purple-500 px-6 py-3.5 font-bold text-white text-sm transition-all shadow-lg shadow-purple-500/20">
+                  <Mail className="h-4 w-4" aria-hidden="true" /> Contact the team at {SALES_EMAIL}
                 </a>
               </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section id="faq" aria-labelledby="faq-heading" className="py-24 bg-gray-50 dark:bg-gray-900/50">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-12">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">FAQ</p>
+              <h2 id="faq-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Common questions</h2>
+            </FadeIn>
+            <div className="space-y-4">
+              {FAQ_ITEMS.map((item, i) => (
+                <FadeIn key={item.q} delay={i * 0.05}>
+                  <details className="group rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all">
+                    <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-bold text-gray-900 dark:text-white text-sm list-none select-none">
+                      {item.q}
+                      <span className="shrink-0 text-purple-500 text-lg leading-none group-open:rotate-45 transition-transform duration-200" aria-hidden="true">+</span>
+                    </summary>
+                    <p className="px-6 pb-5 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.a}</p>
+                  </details>
+                </FadeIn>
+              ))}
             </div>
-          </FadeIn>
-        </div>
-      </section>
+          </div>
+        </section>
+
+        {/* ── CONTACT ── */}
+        <section id="contact" ref={contactRef} data-section="contact" aria-labelledby="contact-heading" className="py-24 bg-white dark:bg-gray-950">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <FadeIn className="text-center mb-12">
+              <p className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-3">Get in Touch</p>
+              <h2 id="contact-heading" className="text-4xl sm:text-5xl font-black tracking-tight text-gray-900 dark:text-white">Let's talk about your project</h2>
+              <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg">
+                Tell us what you need and our team will get back to you within 24 hours.
+              </p>
+            </FadeIn>
+
+            <FadeIn>
+              <div className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-8 sm:p-10 shadow-xl">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="contact-name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Name *</label>
+                      <input
+                        id="contact-name"
+                        type="text" required value={formData.name}
+                        onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
+                        onFocus={() => { if (!formTouched) { trackEvent("contact_form_started"); setFormTouched(true); } }}
+                        placeholder="Your name"
+                        autoComplete="name"
+                        className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="contact-email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Email *</label>
+                      <input
+                        id="contact-email"
+                        type="email" required value={formData.email}
+                        onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="contact-phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Phone</label>
+                      <input
+                        id="contact-phone"
+                        type="tel" value={formData.phone}
+                        onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
+                        placeholder="+91 98765 43210"
+                        autoComplete="tel"
+                        className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="contact-interest" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">I'm interested in</label>
+                      <select
+                        id="contact-interest"
+                        value={formData.product_interest}
+                        onChange={e => setFormData(p => ({ ...p, product_interest: e.target.value }))}
+                        className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      >
+                        <option value="">Select...</option>
+                        <option value="website">Website or web app</option>
+                        <option value="crm">Customised CRM</option>
+                        <option value="erp_business">ERP for business</option>
+                        <option value="erp_college">ERP for college</option>
+                        <option value="inventory">Inventory management</option>
+                        <option value="ordering">Ordering platform (restaurant / bakery)</option>
+                        <option value="ai">AI solutions</option>
+                        <option value="general">General inquiry</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="contact-message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Message</label>
+                    <textarea
+                      id="contact-message"
+                      rows={5} value={formData.message}
+                      onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
+                      placeholder="Tell us about your business and what you need..."
+                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                    />
+                  </div>
+                  <button
+                    type="submit" disabled={submitting}
+                    className="w-full rounded-2xl bg-gradient-to-r from-purple-600 to-violet-600 py-4 font-bold text-white text-base shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 hover:scale-[1.01] transition-all disabled:opacity-60 disabled:scale-100"
+                  >
+                    {submitting ? "Sending..." : "Send Message →"}
+                  </button>
+                </form>
+
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row gap-4 justify-center">
+                  <a href={`mailto:${SALES_EMAIL}`} className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">
+                    <Mail className="h-4 w-4" aria-hidden="true" /> {SALES_EMAIL}
+                  </a>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+      </main>
 
       <CookieBanner />
 
@@ -992,21 +922,27 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-start gap-8">
             <div>
               <img src={LOGO} alt="Pixel & Pitch" className="h-8 w-auto mb-3" />
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Your Gateway to the World</p>
-              <p className="text-xs text-gray-400 mt-2">admin@pixelndpitch.com</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Boutique AI and IT services</p>
+              <p className="text-xs text-gray-400 mt-2">
+                <a href={`mailto:${SALES_EMAIL}`} className="hover:text-purple-500 transition-colors">{SALES_EMAIL}</a>
+              </p>
             </div>
-            <div className="flex flex-wrap gap-8 text-sm">
+            <nav aria-label="Footer" className="flex flex-wrap gap-8 text-sm">
               <div className="space-y-2">
-                <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-wider">Products</p>
-                <a href="#products" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Marketplace</a>
-                <a href="#exclusive" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Exclusive</a>
+                <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-wider">Services</p>
+                <a href="#services" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Websites &amp; Web Apps</a>
+                <a href="#services" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">CRM &amp; ERP</a>
+                <a href="#services" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Inventory &amp; Ordering</a>
+                <a href="#ai" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">AI Solutions</a>
               </div>
               <div className="space-y-2">
                 <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-wider">Company</p>
+                <a href="#industries" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Industries</a>
+                <a href="#pricing" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Pricing</a>
+                <a href="#faq" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">FAQ</a>
                 <a href="#contact" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Contact</a>
-                <a href="https://marketplace.pixelndpitch.com" target="_blank" rel="noopener noreferrer" className="block text-gray-500 dark:text-gray-400 hover:text-purple-500 transition-colors">Launch Store</a>
               </div>
-            </div>
+            </nav>
           </div>
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-400">
             <p>© 2026 Pixel &amp; Pitch. All rights reserved.</p>
