@@ -664,6 +664,9 @@ export default function LandingPage() {
                 </FadeIn>
               ))}
             </div>
+            <p className="mt-12 text-center text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed">
+              And much more. These are our core services, not a limit. If you need custom software for another workflow, tell us what you have in mind and we will scope it with you.
+            </p>
           </div>
         </section>
 
@@ -727,6 +730,9 @@ export default function LandingPage() {
                 </FadeIn>
               ))}
             </div>
+            <p className="mt-12 text-center text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed">
+              And more. We work with any organisation that has a workflow worth digitising, from clinics and hotels to logistics, retail and manufacturing. Do not see your sector? Ask us.
+            </p>
           </div>
         </section>
 
