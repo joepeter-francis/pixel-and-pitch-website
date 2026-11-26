@@ -294,7 +294,8 @@ export default function LandingPage() {
   const visitCount = useRef(getVisitCount());
 
   // Intro overlay — shown only on first ever visit
-  const [showIntro, setShowIntro] = useState(() => localStorage.getItem("pnp_intro_seen") !== "1");
+  // Skip the intro when the visitor arrives on a section link such as /#contact
+  const [showIntro, setShowIntro] = useState(() => localStorage.getItem("pnp_intro_seen") !== "1" && !window.location.hash);
   const [introExiting, setIntroExiting] = useState(false);
   const [typingDone, setTypingDone] = useState(false);
   const dismissedRef = useRef(false);
@@ -313,6 +314,18 @@ export default function LandingPage() {
   const contactRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const [showBubble, setShowBubble] = useState(false);
+
+  // Direct links such as /#contact: the browser tried to scroll before the sections existed,
+  // so scroll to the target once the page has rendered.
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const timer = setTimeout(() => {
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Show the floating "Contact us" bubble once the first section (hero) has been scrolled past
   useEffect(() => {
