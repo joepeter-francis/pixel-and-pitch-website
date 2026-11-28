@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import posthog from "posthog-js";
+import { loadGoogleTagManager } from "../lib/analytics";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -14,14 +14,12 @@ export default function CookieBanner() {
 
   const accept = () => {
     localStorage.setItem("cookie_consent", "accepted");
-    posthog.opt_in_capturing();
-    posthog.capture("$pageview", { $current_url: window.location.href });
+    loadGoogleTagManager();
     setVisible(false);
   };
 
   const decline = () => {
     localStorage.setItem("cookie_consent", "declined");
-    posthog.opt_out_capturing();
     setVisible(false);
   };
 

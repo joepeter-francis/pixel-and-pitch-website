@@ -7,7 +7,7 @@ import {
   Cake, Bot, Sparkles, Workflow, Database, MapPin, Check, Zap, MessageCircle,
   type LucideIcon
 } from "lucide-react";
-import { trackEvent, identifyUser, getDistinctId } from "../lib/analytics";
+import { trackEvent } from "../lib/analytics";
 import CookieBanner from "../components/CookieBanner";
 
 const LOGO = "https://pub-0f4114fde3044f60b819543e9dc412f4.r2.dev/brand/2433c9af-017d-4205-86ed-bc283fc9ce87.png";
@@ -454,20 +454,13 @@ export default function LandingPage() {
     setSubmitting(true);
     try {
       const consent = localStorage.getItem("cookie_consent") === "accepted";
-      identifyUser(formData.email);
-      trackEvent("contact_form_submitted", { product_interest: formData.product_interest });
 
-      const projectId = import.meta.env.VITE_POSTHOG_PROJECT_ID as string;
       const enriched = {
         ...formData,
         ...(consent && {
-          session_id: getDistinctId(),
           referrer: document.referrer || null,
           country: sessionStorage.getItem("pnp_country") || null,
           device: /Mobi/i.test(navigator.userAgent) ? "mobile" : "desktop",
-          posthog_person_url: projectId
-            ? `https://eu.posthog.com/project/${projectId}/persons/${encodeURIComponent(formData.email)}`
-            : null,
         }),
       };
 
@@ -505,6 +498,7 @@ export default function LandingPage() {
       ]);
       const accepted = (r: PromiseSettledResult<Response>) => r.status === "fulfilled" && r.value.ok;
       if (!accepted(hubspotRes) && !accepted(backendRes)) throw new Error("Failed");
+      trackEvent("form_submit_success", { product_interest: formData.product_interest });
       toast.success("Message sent! We'll get back to you within 24 hours.");
       setFormData({ name: "", email: "", phone: "", product_interest: "", message: "" });
       setFormTouched(false);
@@ -1064,7 +1058,6 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-400">
             <p>© 2026 Pixel &amp; Pitch. All rights reserved.</p>
-            <a href="/admin" className="hover:text-purple-400 transition-colors">Admin</a>
           </div>
         </div>
       </footer>
