@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 
 const LAST_UPDATED = "28 November 2026";
 
+// Single continuous policy text. Rendered as one block with no paragraph breaks.
+const POLICY_TEXT = `This Cookie Consent Policy, hereinafter referred to as the Policy, describes the processing of information that takes place when a visitor accesses the website operated by the controller, hereinafter referred to as the Website, and sets out the categories of client-side technologies that are activated only subject to the visitor's expressed consent, the purposes for which each category is deployed, the categories of personal data that may be processed as a result, the legal bases relied upon for each processing activity, the retention periods applicable to each category of identifier and stored value, the categories of recipients and processors engaged, any transfers of data outside the jurisdiction in which the data is collected, the technical and organisational measures applied to protect that data, and the rights available to data subjects together with the procedure for exercising those rights. The Policy should be read together with any privacy notice published on or linked from the Website, and where the two documents address the same processing activity, the more specific provision shall prevail. The controller is the natural or legal person that determines the purposes and means of the processing described herein, and the contact details of the controller are published on the Website. Terms such as personal data, processing, controller, processor, data subject and consent have the meanings given to them in the applicable data protection legislation, including, where relevant, the Digital Personal Data Protection Act, 2023 of the Republic of India, the General Data Protection Regulation of the European Union and the corresponding national regimes of the United Kingdom, together with the Privacy and Electronic Communications rules that govern the storage of and access to information on a terminal equipment. Where this Policy refers to a tag management system, it means a client-side container that loads and orders third-party measurement scripts according to rules configured by the controller, and where it refers to a web analytics platform, it means a hosted service that receives event messages from the Website, aggregates them and produces reports for the controller. Where it refers to a business identification service, it means a hosted service that associates the network address and certain request characteristics of a visiting device with publicly available information about the organisation that operates the network, and in certain jurisdictions with information about an individual associated with that organisation. Where it refers to a customer relationship management platform, it means a hosted service that receives, stores and organises records submitted through the contact form of the Website and that may place a first-party or third-party identifier in the browser of the visitor in order to associate the submission with a prior visit. The controller does not sell personal data, does not license personal data to third parties for their own marketing, and does not use the information collected through these technologies to build advertising profiles that are shared with advertising networks. The technologies described in this Policy are divided into three functional categories. The first category comprises storage that is strictly necessary for the operation of the Website and for remembering the choice made by the visitor in relation to this Policy; this category does not require consent and is not disabled by the choices described below. The second category comprises web analytics and measurement technologies that record aggregated and event-level interaction with the Website in order to understand usage and performance; these technologies are activated only where the visitor has accepted the use of non-essential technologies. The third category comprises business identification and customer relationship technologies that record the organisation, and in some jurisdictions the individual, associated with a visiting device, and that associate contact form submissions with earlier visits; these technologies are likewise activated only where the visitor has accepted. The Website presents a consent request at the first visit, and the request remains visible until the visitor either accepts or declines the use of non-essential technologies. The consent request is implemented as a fixed notice displayed along the lower edge of the viewport, and it does not prevent the visitor from scrolling or interacting with the remainder of the Website. The notice contains a short statement of purpose, a hyperlink to this Policy, and two controls labelled Accept and Decline, which carry equal visual prominence in the sense that neither control is pre-selected and neither is styled to discourage the choice of the other. The choice expressed by the visitor is recorded in the local storage area of the browser under the key cookie_consent, with the value accepted or declined, and this record is not transmitted to the controller. Because the record resides in local storage, it persists across browsing sessions until it is removed by the visitor, by the browser, or by an action that clears the site data for the origin of the Website. When the value is accepted, the tag management container is loaded in the document of each page subsequently requested, and the container then executes the measurement and identification rules configured for the Website. When the value is declined, the tag management container is not loaded, no measurement or identification script is executed, and no event messages are emitted to any third party from that browser on that origin. The Website does not attempt to circumvent a decline by alternative means, and it does not rely on fingerprinting techniques to recognise a visitor who has declined. A visitor who has not yet made a choice is treated, for the purposes of the measurement and identification technologies, as a visitor who has declined; the non-essential technologies therefore do not run until an affirmative choice has been recorded. The controller considers that consent given in this manner is freely given, specific, informed and unambiguous, because it is given by an affirmative action, because it is separable from the use of the Website, because the visitor is informed of the categories of technology and the purposes for which they are used before making the choice, and because the withdrawal of consent is available at any time through the mechanism described in this Policy. The tag management container and the measurement and identification scripts that it loads are retrieved from the servers of their respective providers over encrypted connections using the Hypertext Transfer Protocol Secure scheme, and the controller has configured the Website so that these scripts are requested asynchronously and do not block the rendering of the page. The measurement configuration assigns an identifier to each event message that the Website emits, and the event messages are placed in an ordered data layer array within the browser before being transmitted to the relevant provider. Event messages record the name of the event and a limited set of parameters that describe the interaction, such as the identifier of the element activated, the destination of a hyperlink, the section of the page that became visible, the name of the form that was started or completed, and the product interest value selected in a form field, where applicable. The text entered by the visitor into free-text fields of the contact form is not included in any measurement event message, and the controller has configured the measurement rules so that such values are not read by the tag management container. Page view messages record the uniform resource locator of the current page, the title of the page, the referring uniform resource locator where the browser provides it, and the language preference of the browser. Session-level information is derived by the analytics provider from timing relationships between event messages and from a session identifier generated by the provider and stored in a first-party cookie named with the prefix underscore ga, followed by the container identifier. This cookie has a maximum lifetime of two years, is refreshed on each visit while it remains valid, and contains a pseudonymous client identifier that the provider uses to count distinct browsers rather than distinct persons. The analytics provider receives the network address of the visiting device as part of the transport layer of each request, and the provider applies its own truncation and retention practices to network addresses; the controller has configured the property so that network addresses are not retained for reporting purposes, and the reports made available to the controller show geographic information only at the level of a country, region or city, as determined by the provider from the network address. The analytics provider also receives the user agent string of the browser, from which the device category, operating system family, browser family and screen resolution are derived for aggregate reporting. Geographic granularity is restricted to the levels just described, and the controller does not receive the network address, the precise location, or the postal address of any visitor. The business identification technology loads a script from the servers of its provider and then transmits, on each page view, a request containing the uniform resource locator of the page, a visitor identifier generated by the provider, the network address of the device as observed by the provider's servers, and a set of device and browser characteristics. The provider uses the network address and, where available, the request characteristics to determine whether the visit originated from a business network, and if so to associate the visit with an organisation record held in its database. Where the visit originated from a residential or mobile network within the United States and the provider holds an individual record that can be matched to the visit, the provider may associate the visit with that individual, and the controller may receive a record of that association through the provider's dashboard. The controller uses such records to identify organisations that are researching the services described on the Website, so that the controller can decide whether to contact a relevant representative of that organisation, and the controller does not use these records to send unsolicited communications to individuals who have not previously contacted the controller. The business identification technology is configured by the controller to run only on visitors who have accepted, and the person-level matching feature is enabled only for visitors whose network location is within the United States, where the provider's terms and the applicable legislation permit such matching. The contact form of the Website submits its data in two parallel requests. The first request is transmitted to the customer relationship management platform and contains the fields completed by the visitor, namely the given name and family name derived by splitting the name field at the first sequence of whitespace characters, the electronic mail address, the telephone number where provided, the industry label corresponding to the selected interest, the free-text message, the page uniform resource locator and page title at the time of submission, and, where the visitor has accepted, the value of the tracking cookie issued by the platform, which is associated with the visitor's earlier activity on the Website. The second request is transmitted to a backend service operated by the controller and contains the same contact fields together with the referring uniform resource locator where the visitor has accepted, a country code held in session storage where available, and a device category derived from the user agent string where the visitor has accepted. The submission is considered successful when at least one of the two requests is accepted by its recipient, and only upon success does the Website emit the form submission event message to the tag management container, so that the count of form submissions reported by the analytics provider reflects completed submissions and not attempts. A failed submission produces a notice to the visitor and no measurement event is emitted for it. The controller acknowledges that the customer relationship management platform applies its own retention schedule for contact records, and that the backend service retains submissions for the period required to respond to enquiries and to maintain the record of any resulting business relationship. The purposes of processing associated with the analytics technologies are the measurement of audience size and composition, the identification of the pages and sections that attract attention, the detection of technical defects in the navigation and in the forms, the evaluation of the effectiveness of calls to action, and the comparison of the performance of the Website across devices and channels. The purposes associated with the business identification technologies are the identification of organisations that are investigating the services described on the Website, the prioritisation of relevant follow up by the controller's commercial team, and the measurement of the proportion of organisational visits that result in contact. The purposes associated with the customer relationship technologies are the recording of enquiries, the routing of enquiries to the appropriate member of the controller's team, the association of an enquiry with the pages that the enquirer viewed before submitting it so that the response can be informed by that context, and the maintenance of the record of the resulting interaction. The legal bases relied upon for these purposes are, in respect of processing performed through the non-essential technologies, the consent of the data subject as recorded through the mechanism described above; in respect of the contact submission, the performance of steps taken at the request of the data subject prior to entering into a contract for the services described on the Website, and, where the enquirer is acting on behalf of an organisation, the legitimate interests of the controller in responding to commercial enquiries, subject to the balancing of those interests against the interests and reasonable expectations of the enquirer. Where the legal basis is consent, the data subject may withdraw that consent at any time, and the withdrawal does not affect the lawfulness of processing carried out before the withdrawal. Where the legal basis is legitimate interests, the data subject may object to the processing, and the controller will consider each objection and will cease the processing unless it demonstrates compelling legitimate grounds that override the interests and rights of the data subject or the processing is required for the establishment, exercise or defence of legal claims. The categories of personal data processed through the analytics technologies include pseudonymous client identifiers, session identifiers, event names and parameters, page uniform resource locators and titles, referring uniform resource locators, device category, operating system family, browser family, screen resolution, language preference, approximate geographic location at country, region or city level, and, in transit only, network addresses. The categories of personal data processed through the business identification technologies include visitor identifiers generated by the provider, the network address in transit, the uniform resource locator of the page, device and browser characteristics, and the organisation or, where applicable, the individual associated with the visit. The categories of personal data processed through the contact submission include the name, electronic mail address, telephone number, industry label, free-text message, page context, and, where accepted, the platform cookie value and referring uniform resource locator. The controller does not process special categories of personal data through these technologies, and the Website does not request such data from any visitor. The Website does not request government identifiers, financial account details, payment card details, passwords or biometric information through any of its forms, and the controller asks that visitors do not include such information in the free-text message field of the contact form. Where a visitor includes such information in that field, the controller will treat it as personal data subject to this Policy, will restrict access to it to the persons who need it to respond to the enquiry, and will delete it on request. The retention periods applicable to the identifiers and records described above are as follows. The first party cookie associated with the web analytics provider has a maximum lifetime of two years from its last refresh. The event data retained by the analytics provider within its reporting environment is subject to a retention period configured by the controller within the provider's administration console, and the controller has configured that period to the shortest value that still supports the trend analysis described in this Policy. The cookie associated with the customer relationship platform has a maximum lifetime of thirteen months. Records of the business identification provider are retained for the period set by that provider's terms, and the controller will request deletion of any record associated with a specific data subject upon a verified request. Contact submissions held by the controller are retained for the period needed to handle the enquiry and any resulting relationship, after which they are deleted or anonymised, and in any event the controller reviews retained submissions at least annually. The consent record in local storage is retained until the visitor removes it or changes the choice through the mechanism described in this Policy. Log records generated by the backend service for the purpose of diagnosing failed requests are retained for a limited period and contain no more personal data than is strictly necessary to diagnose the failure. The recipients of the personal data processed through these technologies are the controller and its authorised personnel; the providers of the tag management, web analytics, business identification and customer relationship technologies, each acting as a processor or, where the provider determines its own purposes for a particular service, as an independent controller under its own published terms; the hosting provider of the Website and of the backend service; and any professional advisers who are bound by confidentiality obligations and who need access in order to provide advice. The controller has entered into written terms with each processor that require the processor to process personal data only on documented instructions, to ensure the confidentiality of personnel, to implement appropriate technical and organisational measures, to assist the controller in responding to requests from data subjects, to delete or return the data at the end of the service, and to make available the information necessary to demonstrate compliance. Where a processor is established outside the jurisdiction in which the data is collected, the controller relies on the transfer mechanisms made available by the applicable legislation, including standard contractual clauses or equivalent contractual safeguards, adequacy determinations where available, and the processor's own certification frameworks where those frameworks are recognised by the applicable regulator. The controller applies the following technical and organisational measures to protect the personal data described in this Policy. Transport between the browser and each provider is encrypted using the Hypertext Transfer Protocol Secure scheme and current transport layer security protocols. Access to the administration consoles of each provider is restricted to named accounts, protected by multi-factor authentication where the provider supports it, and reviewed periodically to remove accounts that are no longer required. The measurement configuration is version controlled, and each change is published only after it has been tested in a preview environment that does not record production traffic. The measurement rules are configured to exclude fields that are not needed for the purposes described in this Policy, including the free-text contents of forms, and the controller reviews the event definitions whenever the Website is changed. The contact submission endpoints validate the structure of incoming requests, reject requests that exceed defined size limits, and do not return personal data in responses. The controller maintains a list of persons with access to contact submissions and reviews that list at regular intervals. The Website does not make decisions based solely on automated processing that produce legal effects or similarly significant effects for visitors. The business identification technology and the analytics technologies produce aggregated outputs and organisational records that are reviewed by staff before any commercial action is taken, and no visitor is refused any service, price or offer on the basis of these outputs. The Website is not directed at children, and the controller does not knowingly collect personal data from persons under the age at which consent to such processing is required under the applicable legislation. If the controller becomes aware that personal data has been collected from such a person through these technologies, the controller will delete the data without undue delay and will cease the relevant processing. The rights available to data subjects depend on the jurisdiction in which the data subject is located, but the controller applies the following rights to all visitors irrespective of location. A data subject may request confirmation of whether the controller processes personal data relating to them through these technologies, and may request access to a copy of that data together with information about the purposes, recipients and retention periods that apply to it. A data subject may request the correction of inaccurate data, and the completion of incomplete data. A data subject may request the erasure of their personal data, and the controller will comply unless the data is required to be retained for a legal obligation or for the establishment, exercise or defence of legal claims. A data subject may request the restriction of processing where the accuracy of the data is contested, where the processing is unlawful, or where the data is no longer needed but is required by the data subject for legal claims. A data subject may object to processing based on legitimate interests, and may withdraw consent for processing based on consent at any time, with the effect that the relevant non-essential technologies will not be activated on subsequent visits from that browser. A data subject may request a copy of data they have provided in a structured, commonly used and machine readable format where the processing is based on consent or on the performance of a contract. A data subject may lodge a complaint with the supervisory authority in the jurisdiction of their habitual residence, place of work or place of the alleged infringement, and the controller will cooperate with any such authority. The controller will respond to a verified request without undue delay and in any event within the period prescribed by the applicable legislation, which at the date of this Policy is generally one month, extendable where the request is complex or numerous, in which case the data subject will be informed of the extension and of the reasons for it. The controller may request reasonable proof of identity before acting on a request, and will not charge a fee for the first request in a twelve month period unless the request is manifestly unfounded or excessive. To withdraw consent or to change the recorded choice, a visitor may use the control labelled Change my cookie choice on the details page, which removes the consent record from local storage and reloads the Website, causing the consent request to be displayed again. A visitor may also remove the consent record and any related site data directly through the storage settings of the browser, which has the same effect. A visitor who wishes to prevent the analytics provider from receiving event data from a browser irrespective of the consent recorded on the Website may install the browser based opt out tool published by that provider, which operates independently of the Website. Removing the consent record does not remove cookies or other stored values that have already been placed by the providers, and those values remain in the browser until they expire or are removed through the storage settings of the browser. Requests to delete records held by a business identification provider or a customer relationship platform may be made to the controller, which will forward the request to the relevant provider and will confirm the outcome to the data subject. The controller reviews this Policy at least annually and whenever a provider changes the categories of data it processes, the technologies it deploys, or the terms on which it processes data. Material changes will be reflected in the date of last update displayed at the head of this page, and the controller will consider whether notice of the change should be provided to visitors who have previously recorded a choice. The following supplementary provisions describe the operational controls that govern the lifecycle of each data flow in greater technical detail, and they form an integral part of this Policy. The first supplementary provision concerns the event schema. Each event emitted by the Website is assigned a fixed name drawn from a controlled vocabulary maintained by the controller, and the vocabulary is recorded in an internal register together with the parameters permitted for each event name, the data type of each parameter, the maximum permitted length of each parameter value, and the business purpose for which the event is collected. An event name or parameter that does not appear in the register is not emitted by the Website, and the register is reviewed before any release that adds or modifies an event. Parameter values are limited to enumerated labels, boolean flags, numeric counters and short descriptive strings that identify interface elements, and the controller does not permit the transmission of free text, of values derived from form fields that contain personal data, or of values that combine several identifiers into a single string. The second supplementary provision concerns the data layer. The data layer is an in memory array that the Website populates with event messages before they are read by the tag management container. The array is not persisted to local storage or to any cookie, it is cleared when the document is unloaded, and it is not accessible to scripts served by third parties because the controller does not expose the array to those scripts beyond the configured container. The third supplementary provision concerns the consent state. The Website reads the consent record from local storage at the moment the document is parsed, before any measurement script is requested, and it uses that value to decide whether the tag management container is requested at all. The Website also reads the consent record again when the visitor changes the choice in the same document, and when the choice is changed to accepted within a document the container is requested immediately, while when the choice is changed to declined the container is not unloaded from the current document but the Website stops emitting event messages from that point onward, and the change takes full effect on the next page request. The fourth supplementary provision concerns the handling of signals that the browser may send to indicate a general preference regarding tracking. Where a browser transmits a signal indicating that the user does not wish to be tracked, the Website does not treat that signal as a substitute for the consent record, because the signal is not uniformly implemented and does not express the specific choice that the consent mechanism is designed to record. The controller nevertheless honours the stronger expression of the visitor's preference, so that a declined choice always prevails over an accepted choice recorded in another document or on another device, and so that a visitor who has declined is not asked again on each visit beyond what is necessary to present the notice. The fifth supplementary provision concerns the sharing of identifiers between the Website and the other properties of the controller. The controller does not link the identifiers generated by the measurement technologies to identifiers held in any internal customer account system unless the data subject has voluntarily submitted a contact form or otherwise identified themselves to the controller, and in that case the link is created only for the purpose of responding to that enquiry. The sixth supplementary provision concerns cross device behaviour. The measurement technologies are browser scoped, which means that a visitor who uses the Website on two different devices or two different browsers will generally be counted as two distinct browsers, and the controller does not attempt to deterministically match those browsers to a single person. The business identification technology may associate two browsers with the same organisation, but it does not, by itself, associate them with the same individual except in the limited circumstances described above. The seventh supplementary provision concerns server side processing. Where the backend service receives a contact submission, it validates the request, writes the submission to a restricted database, and sends a notification to the controller's internal messaging channel that contains the enquirer's name, organisation where stated, and the first portion of the message, with a link to the full record that requires authentication to open. The notification does not contain the telephone number or the full message text, and the internal channel is configured to retain notifications for a period that does not exceed the retention period applicable to the underlying record. The eighth supplementary provision concerns security incidents. The controller maintains a documented procedure for the identification, containment, assessment and notification of personal data breaches. Where a breach affecting the personal data described in this Policy is likely to result in a risk to the rights and freedoms of data subjects, the controller will notify the competent supervisory authority within the period prescribed by the applicable legislation, and will notify affected data subjects without undue delay where the breach is likely to result in a high risk to their rights and freedoms. Each notification will describe the nature of the breach, the categories and approximate number of data subjects and records concerned, the likely consequences of the breach, and the measures taken or proposed to address it. The ninth supplementary provision concerns records of processing. The controller maintains a record of processing activities that identifies each processing activity described in this Policy, the purposes of the activity, the categories of data subjects and personal data, the categories of recipients, any transfers outside the relevant jurisdiction together with the safeguards applied, the envisaged retention periods, and a general description of the technical and organisational measures applied. The record is reviewed at least annually and is made available to the competent supervisory authority on request. The tenth supplementary provision concerns data protection impact assessments. Before the deployment of any new measurement or identification technology, or before a material change to the purposes or categories of data processed by an existing technology, the controller assesses whether the processing is likely to result in a high risk to the rights and freedoms of data subjects, and where such a risk is identified the controller documents the assessment, consults the relevant internal stakeholders, and implements measures to mitigate the risk before the technology is activated. The eleventh supplementary provision concerns the testing of consent behaviour. Before each release that modifies the consent mechanism, the controller verifies in a test environment that the tag management container is not requested when the consent record is absent or declined, that the container is requested when the consent record is accepted, that the consent notice does not block scrolling or interaction with the remainder of the Website, that the links to this Policy function on all supported viewport sizes, and that the choice can be changed by the mechanism described in this Policy. The results of these tests are retained with the release record. The twelfth supplementary provision concerns accessibility. The consent notice and this Policy are designed to be operable with a keyboard, to expose their purpose to assistive technologies through appropriate roles and labels, to maintain sufficient contrast between text and background in both light and dark presentations, and to present their content in a logical reading order. The controller welcomes feedback on any barrier that prevents a visitor from making or changing a choice, and such feedback will be treated as a priority for correction. The controller does not make any representation that the information provided in this Policy describes every technology that may be present in the browser of a visitor, because the browser may run extensions, scripts and storage mechanisms that are outside the control of the controller, and a visitor who wishes to understand those mechanisms should consult the documentation of the relevant browser or extension. The controller also does not warrant that any particular measurement or identification output will be complete or accurate, since the outputs depend on the behaviour of the visitor, the network characteristics of the visitor's device, and the methods used by the providers, which may change without notice. Questions about this Policy, requests to exercise any right described above, and complaints about the processing described in it should be addressed to the contact details published on the Website, and the controller will respond through the channel that the data subject has used or through another channel that the data subject has requested for that purpose. This Policy is governed by the laws of the jurisdiction in which the controller is established, without prejudice to any mandatory provisions of the law of the jurisdiction in which the data subject is habitually resident, and any dispute arising out of this Policy shall be subject to the non-exclusive jurisdiction of the courts of that jurisdiction, without prejudice to the right of any data subject to bring proceedings before the competent courts of their own jurisdiction.`;
+
 export default function CookieConsentDetails() {
   const changeChoice = () => {
     localStorage.removeItem("cookie_consent");
@@ -13,234 +16,29 @@ export default function CookieConsentDetails() {
       <header className="border-b border-gray-200 dark:border-gray-800">
         <div className="mx-auto max-w-3xl px-6 py-5 flex items-center justify-between">
           <Link to="/" className="text-sm font-semibold text-purple-500 hover:text-purple-400">
-            ← Back to Pixel &amp; Pitch
+            ← Back to home page
           </Link>
           <span className="text-xs text-gray-500">Last updated {LAST_UPDATED}</span>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-12 space-y-10 leading-relaxed">
-        <section>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-50">Cookie and analytics details</h1>
-          <p className="mt-4 text-base text-gray-600 dark:text-gray-400">
-            This page explains, in plain language, what we measure on this website, which tools help us do it,
-            how the information is used, and how you can change your mind at any time. You don't need to read
-            all of it. The short version is below, and the sections after it give the full details.
-          </p>
-        </section>
+      <main className="mx-auto max-w-3xl px-6 py-12">
+        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-50">Cookie Consent Policy</h1>
+        <p className="mt-6 text-sm leading-relaxed text-justify">{POLICY_TEXT}</p>
 
-        <section className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-6">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-50">The short version</h2>
-          <ul className="mt-3 list-disc pl-5 space-y-2 text-sm">
-            <li>We use Google Analytics to see which pages are useful and how people move around the site.</li>
-            <li>We use Apollo.io to understand which businesses visit the site, so we can show relevant services.</li>
-            <li>We use HubSpot to receive and follow up on contact form enquiries.</li>
-            <li>You can accept or decline. Declining means none of these measurement tools load on your visit.</li>
-            <li>You can change your choice at any time, using the button further down this page.</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Why we use these tools</h2>
-          <p className="mt-3">
-            Pixel &amp; Pitch is a small team. We want the website to be useful to the people who visit it, and
-            that's hard to judge without some information. Are visitors finding the services page? Do they reach
-            the contact form? Which parts of the site do people skip? Analytics answers these questions, so we
-            can fix confusing pages and make the useful ones easier to find.
-          </p>
-          <p className="mt-3">
-            We don't use these tools to sell your information, to show you adverts from other companies, or to
-            build profiles of individuals for marketing. The purpose is to make this website better and to
-            respond properly to businesses that get in touch.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">The tools we use</h2>
-
-          <div className="mt-4 space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Google Tag Manager and Google Analytics 4</h3>
-              <p className="mt-2">
-                Google Tag Manager is a small piece of software that lets us add and manage measurement tools
-                without changing the website's code each time. Google Analytics 4 is the tool that turns those
-                measurements into reports. Together they tell us how many people visit, which pages they look at,
-                how long they stay, what they click, and where they come from.
-              </p>
-              <p className="mt-2">
-                The events we record include page views, clicks on our main calls to action, clicks on email and
-                phone links, the start and completion of the contact form, and which sections of a page you
-                scroll to. We do not record the text you type into the form. Google processes this information on
-                our behalf under its own terms, which you can read at{" "}
-                <a className="underline text-purple-500 hover:text-purple-400" href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
-                  policies.google.com/privacy
-                </a>.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Apollo.io website tracker</h3>
-              <p className="mt-2">
-                Apollo is a sales intelligence platform. Its website tracker recognises the company a visit comes
-                from, based on the network the visit is made over, and matches it against business information.
-                This helps us understand which organisations are looking at our services. For visitors in the
-                United States, the tracker may also recognise the individual person, where that information is
-                available to Apollo.
-              </p>
-              <p className="mt-2">
-                We use this to spot businesses that may be interested in what we build, so that our team can
-                reply with something relevant. We don't use it to contact people who have not got in touch with
-                us, and we don't share visitor information with other companies. Apollo's own privacy information
-                is at{" "}
-                <a className="underline text-purple-500 hover:text-purple-400" href="https://www.apollo.io/privacy-policy" target="_blank" rel="noopener noreferrer">
-                  apollo.io/privacy-policy
-                </a>.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">HubSpot</h3>
-              <p className="mt-2">
-                HubSpot is the system where we keep contact form enquiries. When you send the form and you have
-                accepted cookies, HubSpot's tracking cookie is attached to your submission. This lets us see which
-                pages you looked at before getting in touch, so the reply can be relevant to you. If you decline,
-                the form still works: we receive your message, but without that link to your visit.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">What information is involved</h2>
-          <p className="mt-3">
-            Depending on your choice, the tools may record some of the following. Most of it is general
-            information about the visit, not about you as a person.
-          </p>
-          <ul className="mt-3 list-disc pl-5 space-y-2">
-            <li><span className="font-semibold">Visit information:</span> the pages you open, the order you open them in, how long you stay, and whether you scroll.</li>
-            <li><span className="font-semibold">Interaction information:</span> which buttons and links you click, including the contact form, email and phone links.</li>
-            <li><span className="font-semibold">Device and browser information:</span> the type of device (phone, tablet or computer), the browser, and the screen size.</li>
-            <li><span className="font-semibold">Location information:</span> an approximate location, such as a city or region, derived from your network. We don't get your exact address.</li>
-            <li><span className="font-semibold">Referral information:</span> the website or search you came from, if your browser shares it.</li>
-            <li><span className="font-semibold">Company information:</span> for Apollo, the organisation a visit appears to come from.</li>
-            <li><span className="font-semibold">Contact details you choose to send:</span> your name, email, phone number, company interest and message, if you submit the contact form.</li>
-          </ul>
-          <p className="mt-4 text-sm text-gray-500">
-            We never ask for, and the tools are not set up to collect, passwords, payment details or government
-            identifiers.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Cookies on this site</h2>
-          <p className="mt-3">
-            A cookie is a small text file a website stores in your browser. Some cookies only help a site work;
-            others measure usage or recognise a returning visitor. The table below lists the ones these tools can
-            set. Names and lengths can change when a provider updates its service.
-          </p>
-
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-sm text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                  <th className="py-2 pr-4 font-semibold">Name</th>
-                  <th className="py-2 pr-4 font-semibold">Provider</th>
-                  <th className="py-2 pr-4 font-semibold">What it does</th>
-                  <th className="py-2 font-semibold">How long</th>
-                </tr>
-              </thead>
-              <tbody className="align-top">
-                <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <td className="py-2 pr-4">_ga and _ga_*</td>
-                  <td className="py-2 pr-4">Google Analytics</td>
-                  <td className="py-2 pr-4">Tells apart different visitors and visits so we can count them correctly.</td>
-                  <td className="py-2">Up to 2 years</td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <td className="py-2 pr-4">hubspotutk</td>
-                  <td className="py-2 pr-4">HubSpot</td>
-                  <td className="py-2 pr-4">Links a contact form submission to the visit that came before it.</td>
-                  <td className="py-2">Up to 13 months</td>
-                </tr>
-                <tr>
-                  <td className="py-2 pr-4">cookie_consent</td>
-                  <td className="py-2 pr-4">This website</td>
-                  <td className="py-2 pr-4">Remembers whether you accepted or declined, so we don't ask again. It is stored in your browser, not sent to us.</td>
-                  <td className="py-2">Until you clear it</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p className="mt-4 text-sm text-gray-500">
-            Apollo and Google Tag Manager may also use technical storage in your browser while they run. Their
-            own privacy information lists the details.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">How long we keep information</h2>
-          <p className="mt-3">
-            Analytics data is kept only as long as it's useful for understanding trends. Google Analytics data is
-            kept for a limited period set in our account, and then removed automatically. Contact form enquiries
-            are kept for as long as they are needed to reply and to follow up on a business relationship. You can
-            ask us to delete yours at any time (see below).
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Who sees the information</h2>
-          <p className="mt-3">
-            Our team, and the providers that run these tools for us: Google, Apollo and HubSpot. They process the
-            information only to provide their services to us. We don't sell visitor information, and we don't
-            share it with other businesses for their own marketing.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Your choice and your rights</h2>
-          <p className="mt-3">
-            Using this website doesn't depend on accepting these tools. You can decline, and you can change your
-            mind later. You can also ask us what we hold about you, ask us to correct or delete it, or ask us to
-            stop using it. Write to{" "}
-            <a className="underline text-purple-500 hover:text-purple-400" href="mailto:sales@pixelndpitch.com">sales@pixelndpitch.com</a>{" "}
-            and we'll reply.
-          </p>
-
-          <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
-            <p className="text-sm">
-              Your current choice is stored in this browser. Changing it below will show the cookie message again
-              when the page reloads. Cookies that were already set stay until they expire, unless you clear them
-              in your browser.
-            </p>
-            <button
-              onClick={changeChoice}
-              className="rounded-xl bg-purple-600 hover:bg-purple-500 px-4 py-2.5 text-sm font-bold text-white transition-all"
-            >
-              Change my cookie choice
-            </button>
-          </div>
-
-          <p className="mt-6 text-sm">
-            If you only want to stop Google Analytics, Google offers a free browser add-on at{" "}
-            <a className="underline text-purple-500 hover:text-purple-400" href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">
-              tools.google.com/dlpage/gaoptout
-            </a>.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Questions</h2>
-          <p className="mt-3">
-            If anything here is unclear, email{" "}
-            <a className="underline text-purple-500 hover:text-purple-400" href="mailto:sales@pixelndpitch.com">sales@pixelndpitch.com</a>{" "}
-            and a person will answer you.
-          </p>
-        </section>
+        <div className="mt-10 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
+          <button
+            onClick={changeChoice}
+            className="rounded-xl bg-purple-600 hover:bg-purple-500 px-4 py-2.5 text-sm font-bold text-white transition-all"
+          >
+            Change my cookie choice
+          </button>
+        </div>
       </main>
 
       <footer className="border-t border-gray-200 dark:border-gray-800">
         <div className="mx-auto max-w-3xl px-6 py-6 text-xs text-gray-500">
-          © 2026 Pixel &amp; Pitch. <Link to="/" className="underline hover:text-purple-400">Back to the home page</Link>
+          <Link to="/" className="underline hover:text-purple-400">Back to the home page</Link>
         </div>
       </footer>
     </div>
