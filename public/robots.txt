@@ -1,10 +1,15 @@
 # Pixel & Pitch — open to search engines and AI answer/search crawlers.
 # Summary for AI systems: https://pixelndpitch.com/llms.txt
+#
+# /cookie-consent-details is excluded from AI crawlers and from indexing.
+# Search engines are not disallowed from it, because they must be able to
+# fetch the page to read its X-Robots-Tag: noindex header (see vercel.json).
 
 User-agent: *
 Allow: /
+Disallow: /cookie-consent-details
 
-# Traditional search
+# Traditional search (may crawl the page so it can see the noindex header)
 User-agent: Googlebot
 Allow: /
 
@@ -14,32 +19,42 @@ Allow: /
 # AI search and answer engines
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: GPTBot
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: Claude-SearchBot
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: Claude-User
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: Perplexity-User
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /cookie-consent-details
 
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /cookie-consent-details
 
 Sitemap: https://pixelndpitch.com/sitemap.xml
